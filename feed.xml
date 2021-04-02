@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <id>https://kaylumah.nl/feed.xml</id>
+    <updated>2021-04-02T11:30:38.7962624+00:00</updated>
+    <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
+    <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
+    <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
+    <subtitle>A blog and portfolio website for Kaylumah, a company founded by Max Hamulyák</subtitle>
+    <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
+    <logo>https://kaylumah.nl/assets/logo.svg</logo>
+    <rights>© Kaylumah. All rights reserved.</rights>
+    <generator uri="/feed.xml" version="34a81c6">Kaylumah Site Generator</generator>
+    <entry>
+        <id>https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html</id>
+        <title>Set NuGet metadata via MSBuild</title>
+        <author>
+            <name>Max Hamulyák</name>
+            <email>max@kaylumah.nl</email>
+            <uri>https:/kaylumah.nl</uri>
+        </author>
+        <published>2021-03-27T00:00:00.0000000+00:00</published>
+        <updated>2021-03-27T00:00:00.0000000+00:00</updated>
+        <link href="https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html" />
+        <content type="html">
+            &lt;p&gt;For .NET, the standard mechanism for sharing packages is NuGet. A &lt;code&gt;.nupkg&lt;/code&gt; file is an archive that contains your compiled code (DLLs), other files related to your code, and a manifest containing metadata (&lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/what-is-nuget&quot; class=&quot;external&quot;&gt;source&lt;/a&gt;). This blog post will show you how data in this manifest can be controlled by using MSBuild.&lt;/p&gt;
+&lt;p&gt;For simplification purposes, my sample project will consist of only a single class library project. I like you to keep in mind that this would scale to many projects as Microsoft did with the &lt;a href=&quot;https://github.com/dotnet/runtime&quot; class=&quot;external&quot;&gt;&amp;quot;Microsoft.Extensions packages&amp;quot;&lt;/a&gt;. The sky is the limit.&lt;/p&gt;
+&lt;h2 id=&quot;setup&quot;&gt;&lt;a href=&quot;#setup&quot;&gt;Setup&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There are bits of this demo that work cross-platform and bits that require you to run on Windows. For example, I like the control the &lt;a href=&quot;https://docs.microsoft.com/en-us/dotnet/core/tools/&quot; class=&quot;external&quot;&gt;.NET CLI&lt;/a&gt; gives me when creating a new project. If you prefer to use &lt;a href=&quot;https://visualstudio.microsoft.com/vs/&quot; class=&quot;external&quot;&gt;Visual Studio&lt;/a&gt;, the result will remain the same.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;$ dotnet new sln
+
+The template &amp;quot;Solution File&amp;quot; was created successfully.
+
+$ dotnet new classlib --framework netstandard2.0 --output src/Kaylumah.Logging.Extensions.Abstractions
+
+The template &amp;quot;Class library&amp;quot; was created successfully.
+
+Processing post-creation actions...
+Running &#39;dotnet restore&#39; on src/Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj...
+  Determining projects to restore...
+  Restored C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj (in 84 ms).
+Restore succeeded.
+
+$ dotnet sln add src/Kaylumah.Logging.Extensions.Abstractions/Kaylumah.Logging.Extensions.Abstractions.csproj
+
+Project `src\Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj` added to the solution.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I chose &lt;code&gt;Kaylumah.Logging.Extensions.Abstractions&lt;/code&gt; to keep inline and in style with the extension packages Microsoft provides. By default, the namespace of the assembly sets the unique package identifier. Of course, this only matters when publishing the package to a NuGet source like &lt;code&gt;https://nuget.org&lt;/code&gt;. That is not this article&#39;s scope, as publishing the default template with only the empty &lt;code&gt;Class1.cs&lt;/code&gt; file would not benefit anyone by sharing it.&lt;/p&gt;
+&lt;h2 id=&quot;why-do-we-even-need-metadata-in-our-packages&quot;&gt;&lt;a href=&quot;#why-do-we-even-need-metadata-in-our-packages&quot;&gt;Why do we even need metadata in our packages?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Before showing you how I set metadata, I like to show you what happens without specifying any metadata. You can run the command &lt;a href=&quot;https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-pack#description&quot; class=&quot;external&quot;&gt;&lt;code&gt;dotnet pack&lt;/code&gt;&lt;/a&gt; for a single project or an entire solution. If you do it for the solution, only projects that are &lt;code&gt;&amp;lt;IsPackable&amp;gt;true&amp;lt;/IsPackable&amp;gt;&lt;/code&gt; generate a package. The class library we created uses the &lt;code&gt;Microsoft.NET.Sdk&lt;/code&gt; and is packable by default.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;$ dotnet pack
+
+Microsoft (R) Build Engine version 16.8.3+39993bd9d for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Kaylumah.Logging.Extensions.Abstractions -&amp;gt; C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\bin\Debug\netstandard2.0\Kaylumah.Logging.Extensions.Abstractions.dll
+  Successfully created package &#39;C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\bin\Debug\Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg&#39;.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This command generated the package in my bin folder. Since I did not specify a configuration, it chose the default configuration, which is Debug. So how do we inspect &lt;code&gt;Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg&lt;/code&gt;? My prefered way is the &lt;a href=&quot;https://github.com/NuGetPackageExplorer/NuGetPackageExplorer&quot; class=&quot;external&quot;&gt;NuGet Package Explorer&lt;/a&gt;, which is unfortunately only available on Windows.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/001_npe_initial_metadata.png&quot; alt=&quot;Without Metadata in Package Explorer&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;There seems to be no metadata set by default. Let&#39;s, for a quick moment, compare it to what Microsoft adds to its packages. We can do this by downloading &lt;a href=&quot;https://www.nuget.org/api/v2/package/Microsoft.Extensions.Logging.Console/3.1.13&quot; class=&quot;external&quot;&gt;the package&lt;/a&gt; from nuget.org and view it like we just did for &lt;code&gt;Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg&lt;/code&gt;. Alternatively, the NuGet Package Explorer also supports viewing metadata from remote sources such as nuget.org.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/002_console_logger_info.png&quot; alt=&quot;Microsoft Extensions Logging Metadata in Package Explorer&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Now that is what I call metadata. Remember that &lt;code&gt;.nupkg&lt;/code&gt; files are archives; this means we can easily verify what the explorer was telling us about our package.  You can do this by changing the extension from &lt;code&gt;.nupkg&lt;/code&gt; to &lt;code&gt;.zip&lt;/code&gt; and then extracting it. It contains &lt;code&gt;Kaylumah.Logging.Extensions.Abstractions.nuspec&lt;/code&gt;, which is the manifest I was talking about in the introduction. At the moment, it looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;package xmlns=&amp;quot;http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd&amp;quot;&amp;gt;
+  &amp;lt;metadata&amp;gt;
+    &amp;lt;id&amp;gt;Kaylumah.Logging.Extensions.Abstractions&amp;lt;/id&amp;gt;
+    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
+    &amp;lt;authors&amp;gt;Kaylumah.Logging.Extensions.Abstractions&amp;lt;/authors&amp;gt;
+    &amp;lt;requireLicenseAcceptance&amp;gt;false&amp;lt;/requireLicenseAcceptance&amp;gt;
+    &amp;lt;description&amp;gt;Package Description&amp;lt;/description&amp;gt;
+    &amp;lt;dependencies&amp;gt;
+      &amp;lt;group targetFramework=&amp;quot;.NETStandard2.0&amp;quot; /&amp;gt;
+    &amp;lt;/dependencies&amp;gt;
+  &amp;lt;/metadata&amp;gt;
+&amp;lt;/package&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So as expected, it matches what NuGet Package Explorer shows us. The default for both id and authors is the assembly namespace, whereas description defaults to &amp;quot;Package Description&amp;quot;, which tells our users nothing about what the package does.&lt;/p&gt;
+&lt;h2 id=&quot;how-do-we-set-metadata&quot;&gt;&lt;a href=&quot;#how-do-we-set-metadata&quot;&gt;How do we set metadata?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Now that we have covered our basis, we can finally explain how we can set metadata via MSBuild.&lt;/p&gt;
+&lt;h3 id=&quot;set-metadata-from-csproj&quot;&gt;&lt;a href=&quot;#set-metadata-from-csproj&quot;&gt;Set metadata from csproj&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Since we are working on a single project, the logical place to set metadata is by editing our .csproj file. I will not cover every property today, so I refer you to &lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target&quot; class=&quot;external&quot;&gt;pack target docs&lt;/a&gt; link. I will, however, cover properties I often use in my projects.&lt;/p&gt;
+&lt;p&gt;So behind the scenes, what happens is that specific MSBuild properties map to properties in the .nuspec file. We have to either edit the existing &lt;code&gt;PropertyGroup&lt;/code&gt; in our file or add one to set properties. In my opinion, every package should contain branding (like authors, company and copyright information), a helpful description and categorized by a series of tags. So in the example below, I have set these values.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;Project Sdk=&amp;quot;Microsoft.NET.Sdk&amp;quot;&amp;gt;
+  &amp;lt;PropertyGroup&amp;gt;
+    &amp;lt;TargetFramework&amp;gt;netstandard2.0&amp;lt;/TargetFramework&amp;gt;
+    &amp;lt;Authors&amp;gt;Max Hamuly&#225;k&amp;lt;/Authors&amp;gt;
+    &amp;lt;!-- Note: Company does not get added to the .nuspec but it is part of the Assembly...Attribute so I often set them all --&amp;gt;
+    &amp;lt;Company&amp;gt;Kaylumah&amp;lt;/Company&amp;gt;
+    &amp;lt;Description&amp;gt;Logging abstractions for Kaylumah.&amp;lt;/Description&amp;gt;
+    &amp;lt;PackageTags&amp;gt;logging;abstractions&amp;lt;/PackageTags&amp;gt;
+    &amp;lt;Copyright&amp;gt;Copyright (c) 2021 Kaylumah&amp;lt;/Copyright&amp;gt; 
+  &amp;lt;/PropertyGroup&amp;gt;
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we run &lt;code&gt;dotnet pack&lt;/code&gt; now, we can immediately see that our package no longer has empty metadata.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/003_npe_author_metadata.png&quot; alt=&quot;With Author Metadata in Package Explorer&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;You can also verify this in Visual Studio by checking your projects properties and clicking on the &lt;code&gt;Package&lt;/code&gt; tab.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/004_vs2019_author_metadata.png&quot; alt=&quot;With Author Metadata in VS2019&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;In the introduction, I talked about what exactly is a NuGet package. We are now at the part regarding other files. Since we already took care of branding, let us also add an icon. Our code is under license; how do we include it in the package?&lt;/p&gt;
+&lt;p&gt;Add files named &lt;code&gt;Logo.png&lt;/code&gt; and &lt;code&gt;LICENSE&lt;/code&gt; to the folder containing our project. We can then use the tags &lt;code&gt;PackageIcon&lt;/code&gt; and &lt;code&gt;PackageLicenseFile&lt;/code&gt; respectfully. We also need to tell MSBuild that these files should be part of the package. The updated project file looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;Project Sdk=&amp;quot;Microsoft.NET.Sdk&amp;quot;&amp;gt;
+
+  &amp;lt;PropertyGroup&amp;gt;
+    &amp;lt;TargetFramework&amp;gt;netstandard2.0&amp;lt;/TargetFramework&amp;gt;
+    &amp;lt;Authors&amp;gt;Max Hamuly&#225;k&amp;lt;/Authors&amp;gt;
+    &amp;lt;Company&amp;gt;Kaylumah&amp;lt;/Company&amp;gt;
+    &amp;lt;Description&amp;gt;Logging abstractions for Kaylumah.&amp;lt;/Description&amp;gt;
+    &amp;lt;PackageTags&amp;gt;logging;abstractions&amp;lt;/PackageTags&amp;gt;
+    &amp;lt;Copyright&amp;gt;Copyright (c) 2021 Kaylumah&amp;lt;/Copyright&amp;gt;
+    &amp;lt;PackageIcon&amp;gt;Logo.png&amp;lt;/PackageIcon&amp;gt;
+    &amp;lt;PackageLicenseFile&amp;gt;LICENSE&amp;lt;/PackageLicenseFile&amp;gt;
+  &amp;lt;/PropertyGroup&amp;gt;
+
+  &amp;lt;ItemGroup&amp;gt;
+    &amp;lt;None Include=&amp;quot;Logo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; /&amp;gt;
+    &amp;lt;None Include=&amp;quot;LICENSE&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot;/&amp;gt;
+  &amp;lt;/ItemGroup&amp;gt;
+
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/005_npe_includingfiles_metadata.png&quot; alt=&quot;Including FileMetadata&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Regarding these files, I like to say a couple of things before moving on to more advanced use cases.
+There is more than one way to set both the Icon and the License files for starters, which the Microsoft Docs &lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target&quot; class=&quot;external&quot;&gt;describe&lt;/a&gt;. Both used to have a &lt;code&gt;Url&lt;/code&gt; variant that would link to the Icon or License in question. Both of those options are now deprecated, and in the case of &lt;code&gt;PackageLicenseFile&lt;/code&gt;, the alternative is  &lt;code&gt;PackageLicenseExpression&lt;/code&gt;, which uses &lt;code&gt;SDPX&lt;/code&gt; license identifiers.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;note&lt;/strong&gt;: For backwards compatibility, &lt;code&gt;PackageLicenseUrl&lt;/code&gt; gets populated with &lt;code&gt;https://docs.microsoft.com/en-us/nuget/consume-packages/finding-and-choosing-packages#license-url-deprecation&lt;/code&gt; if you choose to use &lt;code&gt;PackageLicenseFile&lt;/code&gt; and with &lt;code&gt;https://licenses.nuget.org/MIT&lt;/code&gt; for example, if your SPDX would be MIT.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The second point I like to raise is regarding the file names.
+In my example, the value for &lt;code&gt;PackageIcon&lt;/code&gt; and the name of my icon file match precisely; this is not necessary. What does matter is the name we specify in the package path. Failing to do so would, for example, trigger &amp;quot;NU5046: The icon file &#39;NotAnIcon.png&#39; does not exist in the package. See a couple of samples below:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;!-- Visible &#39;False&#39; hides the file in the Visual Studio explorer but still packages it under Logo.png --&amp;gt;
+&amp;lt;None Include=&amp;quot;Logo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; Visible=&amp;quot;false&amp;quot; /&amp;gt;
+
+&amp;lt;!-- Link changes the name Visual Studio displays in the explorer but still packages it under Logo.png --&amp;gt;
+&amp;lt;None Include=&amp;quot;Logo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; Link=&amp;quot;NotAnIcon.png&amp;quot; /&amp;gt;
+
+&amp;lt;!-- PackagePath rewrites the filename to Icon.png so PackageIcon remains unchanged --&amp;gt;
+&amp;lt;None Include=&amp;quot;KaylumahLogo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;Icon.png&amp;quot; /&amp;gt;
+
+&amp;lt;!-- PackagePath rewrites the filename to KaylumahLogo.png so set PackageIcon to &amp;quot;KaylumahLogo&amp;quot; --&amp;gt;
+&amp;lt;None Include=&amp;quot;Icon.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;KaylumahLogo.png&amp;quot; /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Rewriting via package path only works for files with an extension. For historical purposes, both NuGet and MSBuild treat these files as directories. If we had used &lt;code&gt;LICENSE.txt&lt;/code&gt; over &lt;code&gt;LICENSE&lt;/code&gt;, we would have been able to modify the name in the package. However, our &lt;code&gt;LICENSE&lt;/code&gt; file can apply both the &lt;code&gt;Visible&lt;/code&gt; and the &lt;code&gt;Link&lt;/code&gt; example. For more information regarding Package Icons, see &lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-an-icon-image-file&quot; class=&quot;external&quot;&gt;package-icon&lt;/a&gt;. For packing licenses without an extension see &lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-file-without-an-extension&quot; class=&quot;external&quot;&gt;package-license-1&lt;/a&gt;, and licenses with an extension see &lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-license-expression-or-a-license-file&quot; class=&quot;external&quot;&gt;package-license-2&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Keep in mind that by adding both Icon and License files to the package, the overall package size slightly increases; this can cause slower restore times on initial package downloads. This performance penalty is a trade-off you have to decide for your self. Given today&#39;s network speeds, I think the impact isn&#39;t noticeable.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;set-metadata-for-multiple-projects&quot;&gt;&lt;a href=&quot;#set-metadata-for-multiple-projects&quot;&gt;Set metadata for multiple projects&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;So lets for a moment, assume our project is a huge success. We are creating more and more extension libraries. Think about the vast number of packages in &lt;code&gt;dotnet/runtime&lt;/code&gt;. Even if we would only include an implementation for &lt;code&gt;.Abstractions&lt;/code&gt; package, it would be very time consuming to do this for every project. It would also violate the &lt;a href=&quot;https://en.wikipedia.org/wiki/Don%27t_repeat_yourself&quot; class=&quot;external&quot;&gt;DRY principle&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To get started, create a file called &lt;code&gt;Directory.Build.props&lt;/code&gt; at the root of your solution. The way Microsoft handles this file, and in precisely that casing, is starting from your project folder; it goes up till it finds a match or it reaches the root of your drive. This &lt;code&gt;Directory.Build.props&lt;/code&gt; file follows the same syntax we use in our &lt;code&gt;.csproj&lt;/code&gt; files. To demonstrate, remove only the &lt;code&gt;Copyright&lt;/code&gt; tag from the project and recreate it in the &lt;code&gt;Directory.Build.props&lt;/code&gt; file. Now is the perfect moment to also demonstrate something I have not yet told you. We are using MSBuild to populate our metadata, and thus we can use the full force of MSBuild. For example, we can reference other variables and even use built-in functions. So the thing about our current Copyright implementation is that if after &lt;code&gt;31/12/2021&lt;/code&gt; I want to release the next version, I have to remember to update my copyright notice. We can achieve this by setting the copyright tag like below.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;Project&amp;gt;
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;Copyright&amp;gt;Copyright &#169; $(Company) $([System.DateTime]::Now.Year)&amp;lt;/Copyright&amp;gt;
+    &amp;lt;/PropertyGroup&amp;gt;
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/006_npe_buildpropsv1.png&quot; alt=&quot;Using BuildProps V1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;What happened? Something is wrong; why do I see the copyright year 2021, but not my company name? Before explaining it, let me prove it by adding a company tag to the &lt;code&gt;Directory.Build.props&lt;/code&gt; with a different value. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;Project&amp;gt;
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;Company&amp;gt;NotKaylumah&amp;lt;/Company&amp;gt;
+        &amp;lt;Copyright&amp;gt;Copyright &#169; $(Company) $([System.DateTime]::Now.Year)&amp;lt;/Copyright&amp;gt;
+    &amp;lt;/PropertyGroup&amp;gt;
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Unlike the &lt;code&gt;Copyright&lt;/code&gt; tag do not remove the &lt;code&gt;Company&lt;/code&gt; tag from the &lt;code&gt;.csproj&lt;/code&gt; file. The result, this time, is a little different.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/007_npe_buildpropsv2.png&quot; alt=&quot;Using BuildProps V2&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;It appears that I have two different values for &lt;code&gt;Company&lt;/code&gt;; this happens because &lt;code&gt;Directory.Build.props&lt;/code&gt; gets imported before your project, and &lt;code&gt;Directory.Build.targets&lt;/code&gt; gets imported after. The latest registration wins. That is why if we would read the &lt;code&gt;System.Reflection.AssemblyCopyrightAttribute&lt;/code&gt; the value for &lt;code&gt;Company&lt;/code&gt; is &amp;quot;Kaylumah&amp;quot;, but when we set &lt;code&gt;Copyright&lt;/code&gt;, it is still &amp;quot;NotKaylumah&amp;quot;. You can verify this behaviour by running the preprocess command (&lt;code&gt;dotnet build -pp:fullproject.xml&lt;/code&gt;). See &lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2019&quot; class=&quot;external&quot;&gt;msbuild comand line reference&lt;/a&gt; for an explanation.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Word of caution, you should not set every property this way. You should only set the values that are shared cross-project. For example, &lt;code&gt;Company&lt;/code&gt; and &lt;code&gt;Copyright&lt;/code&gt; are likely to be the same for every project. The &lt;code&gt;Authors&lt;/code&gt; and &lt;code&gt;PackageTags&lt;/code&gt; could be project-specific; heck, even &lt;code&gt;Description&lt;/code&gt; could be reused if so desired. One thing for sure is that &lt;code&gt;Id&lt;/code&gt; can not be recycled since every package requires a unique Id.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;Project&amp;gt;
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;Authors&amp;gt;Max Hamuly&#225;k&amp;lt;/Authors&amp;gt;
+        &amp;lt;Company&amp;gt;Kaylumah&amp;lt;/Company&amp;gt;
+        &amp;lt;Description&amp;gt;Logging abstractions for Kaylumah.&amp;lt;/Description&amp;gt;
+        &amp;lt;Copyright&amp;gt;Copyright &#169; $(Company) $([System.DateTime]::Now.Year)&amp;lt;/Copyright&amp;gt;
+        &amp;lt;PackageTags&amp;gt;logging;abstractions&amp;lt;/PackageTags&amp;gt;
+        &amp;lt;PackageIcon&amp;gt;Logo.png&amp;lt;/PackageIcon&amp;gt;
+        &amp;lt;PackageLicenseFile&amp;gt;LICENSE&amp;lt;/PackageLicenseFile&amp;gt;
+    &amp;lt;/PropertyGroup&amp;gt;
+
+    &amp;lt;ItemGroup&amp;gt;
+        &amp;lt;None Include=&amp;quot;$(MSBuildThisFileDirectory)Logo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; /&amp;gt;
+        &amp;lt;None Include=&amp;quot;$(MSBuildThisFileDirectory)LICENSE&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; /&amp;gt;
+    &amp;lt;/ItemGroup&amp;gt;
+
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/008_npe_buildpropsv3.png&quot; alt=&quot;Using BuildProps V3&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;In case you are wondering where did &lt;code&gt;$(MSBuildThisFileDirectory)&lt;/code&gt; come from, it is one of the predefined MSBuild variables you can use. It allows us to set the path without thinking about relative file paths; for other variables, see the &lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-reserved-and-well-known-properties?view=vs-2019&quot; class=&quot;external&quot;&gt;Microsoft Docs&lt;/a&gt; on the topic.&lt;/p&gt;
+&lt;h3 id=&quot;bonus-chapter&quot;&gt;&lt;a href=&quot;#bonus-chapter&quot;&gt;Bonus Chapter&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;I have referred to the list of properties before. There are a couple of handy ones we have not yet discussed. I am talking about the repository fields, making sure that an artefact can always trace back to a specific revision of your source code.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;NuSpec&lt;/th&gt;
+&lt;th&gt;MSBuild&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Repository/Url&lt;/td&gt;
+&lt;td&gt;RepositoryUrl&lt;/td&gt;
+&lt;td&gt;URL where sourcecode is located i.e. &lt;code&gt;https://github.com/NuGet/NuGet.Client.git&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Repository/Type&lt;/td&gt;
+&lt;td&gt;RepositoryType&lt;/td&gt;
+&lt;td&gt;The repository type i.e. &lt;code&gt;git&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Repository/Branch&lt;/td&gt;
+&lt;td&gt;RepositoryBranch&lt;/td&gt;
+&lt;td&gt;Optional repository branch info i.e. &lt;code&gt;main&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Repository/Commit&lt;/td&gt;
+&lt;td&gt;RepositoryCommit&lt;/td&gt;
+&lt;td&gt;Optional commit information i.e. &lt;code&gt;0e4d1b598f350b3dc675018d539114d1328189ef&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Before I explain this, I am getting a bit tired of running &lt;code&gt;dotnet pack&lt;/code&gt; every time. Lucky for me, there is a way to generate a package on build. Update the &lt;code&gt;.csproj&lt;/code&gt; file to look like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;Project Sdk=&amp;quot;Microsoft.NET.Sdk&amp;quot;&amp;gt;
+
+  &amp;lt;PropertyGroup&amp;gt;
+    &amp;lt;TargetFramework&amp;gt;netstandard2.0&amp;lt;/TargetFramework&amp;gt;
+    &amp;lt;GeneratePackageOnBuild&amp;gt;true&amp;lt;/GeneratePackageOnBuild&amp;gt;
+  &amp;lt;/PropertyGroup&amp;gt;
+
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So back to repository info. MSBuild itself is not aware of things like source control. Fortunately, we can pass parameters from the outside to use inside MSBuild. For this, we have the &lt;code&gt;-p&lt;/code&gt; or &lt;code&gt;-property&lt;/code&gt; switch. The following script retrieves the URL, branch name and SHA1 hash from the current commit.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;#!/bin/sh -x
+
+REPO_URL=$(git config --get remote.origin.url)
+REPO_BRANCH=$(git branch --show-current)
+REPO_COMMIT=$(git rev-parse HEAD)
+dotnet build -p:RepositoryUrl=&amp;quot;$REPO_URL&amp;quot; -p:RepositoryBranch=&amp;quot;$REPO_BRANCH&amp;quot; -p:RepositoryCommit=&amp;quot;$REPO_COMMIT&amp;quot; -p:RepositoryType=&amp;quot;git&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Remember, we now generate a package on build. Let us verify we see repo info by opening the created package in NuGet Package Explorer.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210327/nuget-metadata/009_npe_repoinfo.png&quot; alt=&quot;Repo Info in Package Explorer&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Even though it is OK to add repo metadata this way, there is a better alternative. This alternative does more than add metadata; it also enables source code debugging from NuGet packages. How cool is that? This technology is called &lt;a href=&quot;https://github.com/dotnet/sourcelink&quot; class=&quot;external&quot;&gt;Source Link&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Like before with the properties, I have no wish to add source link to every package separately. For this, create &lt;code&gt;Directory.Build.targets&lt;/code&gt;, which looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+ &amp;lt;Project&amp;gt;
+     &amp;lt;ItemGroup&amp;gt;
+         &amp;lt;PackageReference Include=&amp;quot;Microsoft.SourceLink.GitHub&amp;quot; Version=&amp;quot;1.0.0&amp;quot; PrivateAssets=&amp;quot;all&amp;quot; IsImplicitlyDefined=&amp;quot;true&amp;quot; /&amp;gt;
+     &amp;lt;/ItemGroup&amp;gt;
+ &amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To configure source link, we need to update &lt;code&gt;Directory.Build.props&lt;/code&gt; as well.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;Project&amp;gt;
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;Authors&amp;gt;Max Hamuly&#225;k&amp;lt;/Authors&amp;gt;
+        &amp;lt;Company&amp;gt;Kaylumah&amp;lt;/Company&amp;gt;
+        &amp;lt;Description&amp;gt;Logging abstractions for Kaylumah.&amp;lt;/Description&amp;gt;
+        &amp;lt;Copyright&amp;gt;Copyright &#169; $(Company) $([System.DateTime]::Now.Year)&amp;lt;/Copyright&amp;gt;
+        &amp;lt;PackageTags&amp;gt;logging;abstractions&amp;lt;/PackageTags&amp;gt;
+        &amp;lt;PackageIcon&amp;gt;Logo.png&amp;lt;/PackageIcon&amp;gt;
+        &amp;lt;PackageLicenseFile&amp;gt;LICENSE&amp;lt;/PackageLicenseFile&amp;gt;
+    &amp;lt;/PropertyGroup&amp;gt;
+
+    &amp;lt;ItemGroup&amp;gt;
+        &amp;lt;None Include=&amp;quot;$(MSBuildThisFileDirectory)Logo.png&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; /&amp;gt;
+        &amp;lt;None Include=&amp;quot;$(MSBuildThisFileDirectory)LICENSE&amp;quot; Pack=&amp;quot;true&amp;quot; PackagePath=&amp;quot;&amp;quot; /&amp;gt;
+    &amp;lt;/ItemGroup&amp;gt;
+
+    &amp;lt;PropertyGroup&amp;gt;
+        &amp;lt;PublishRepositoryUrl&amp;gt;true&amp;lt;/PublishRepositoryUrl&amp;gt;
+        &amp;lt;EmbedUntrackedSources&amp;gt;true&amp;lt;/EmbedUntrackedSources&amp;gt;
+        &amp;lt;IncludeSymbols&amp;gt;true&amp;lt;/IncludeSymbols&amp;gt;
+        &amp;lt;SymbolPackageFormat&amp;gt;snupkg&amp;lt;/SymbolPackageFormat&amp;gt;
+    &amp;lt;/PropertyGroup&amp;gt;
+
+&amp;lt;/Project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To prove that it is still working, here is the entire &lt;code&gt;.nuspec&lt;/code&gt; file after adding Source Link&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-xml&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;
+&amp;lt;package xmlns=&amp;quot;http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd&amp;quot;&amp;gt;
+  &amp;lt;metadata&amp;gt;
+    &amp;lt;id&amp;gt;Kaylumah.Logging.Extensions.Abstractions&amp;lt;/id&amp;gt;
+    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
+    &amp;lt;authors&amp;gt;Max Hamuly&#225;k&amp;lt;/authors&amp;gt;
+    &amp;lt;requireLicenseAcceptance&amp;gt;false&amp;lt;/requireLicenseAcceptance&amp;gt;
+    &amp;lt;license type=&amp;quot;file&amp;quot;&amp;gt;LICENSE&amp;lt;/license&amp;gt;
+    &amp;lt;licenseUrl&amp;gt;https://aka.ms/deprecateLicenseUrl&amp;lt;/licenseUrl&amp;gt;
+    &amp;lt;icon&amp;gt;Logo.png&amp;lt;/icon&amp;gt;
+    &amp;lt;description&amp;gt;Logging abstractions for Kaylumah.&amp;lt;/description&amp;gt;
+    &amp;lt;copyright&amp;gt;Copyright &#169; Kaylumah 2021&amp;lt;/copyright&amp;gt;
+    &amp;lt;tags&amp;gt;logging abstractions&amp;lt;/tags&amp;gt;
+    &amp;lt;repository type=&amp;quot;git&amp;quot; url=&amp;quot;https://github.com/Kaylumah/NugetMetadataDemo.git&amp;quot; commit=&amp;quot;3378cf33e0061b234c1f58e060489efd81e08586&amp;quot; /&amp;gt;
+    &amp;lt;dependencies&amp;gt;
+      &amp;lt;group targetFramework=&amp;quot;.NETStandard2.0&amp;quot; /&amp;gt;
+    &amp;lt;/dependencies&amp;gt;
+  &amp;lt;/metadata&amp;gt;
+&amp;lt;/package&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;closing-thoughts&quot;&gt;&lt;a href=&quot;#closing-thoughts&quot;&gt;Closing Thoughts&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We looked at setting metadata via MSBuild and sharing metadata between projects. You can take this even further by using MSBuild tasks to verify that packages must have a description like &lt;a href=&quot;https://github.com/dotnet/arcade/blob/9a72efb067b74bb9147f9413ade6173b568ea1af/src/Microsoft.DotNet.Arcade.Sdk/tools/Workarounds.targets#L79&quot; class=&quot;external&quot;&gt;shown here&lt;/a&gt;. It is also possible to create an entire SDK as Microsoft did with &lt;a href=&quot;https://github.com/dotnet/arcade&quot; class=&quot;external&quot;&gt;Arcade&lt;/a&gt;. Of course, Arcade goes much further than just specifying some metadata. You can read about how / why Microsoft did that &lt;a href=&quot;https://devblogs.microsoft.com/dotnet/the-evolving-infrastructure-of-net-core/&quot; class=&quot;external&quot;&gt;on the devblogs&lt;/a&gt;. I experimented with a custom SDK heavily inspired by Arcade, but that is a blog post for another day.&lt;/p&gt;
+&lt;p&gt;For now, I hope I was able to teach you something about the power of MSBuild and how we can use it to manipulate our NuGet packages. If you have any questions, feel free to reach out.&lt;/p&gt;
+&lt;p&gt;The corresponding source code for this article is on &lt;a href=&quot;https://github.com/Kaylumah/NugetMetadataDemo&quot; class=&quot;external&quot;&gt;GitHub&lt;/a&gt;, there you can see all the changes I addressed in sequence.&lt;/p&gt;
+&lt;p&gt;See you next time, stay healthy and happy coding to all &#129528;!&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;sources&quot;&gt;&lt;a href=&quot;#sources&quot;&gt;Sources&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;This blog was written based on personal experience when creating packages. If not already explicitly linked in the text, here are some of the primary sources used in the article.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019&quot; class=&quot;external&quot;&gt;Customize your build&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets&quot; class=&quot;external&quot;&gt;MSBuild targets&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package-dotnet-cli&quot; class=&quot;external&quot;&gt;Create a package dotnet cli&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli&quot; class=&quot;external&quot;&gt;Create and publish a package using dotnet cli&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-reserved-and-well-known-properties?view=vs-2019&quot; class=&quot;external&quot;&gt;MSBuild reserved and well-known properties&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://cezarypiatek.github.io/post/setting-assembly-and-package-metadata/&quot; class=&quot;external&quot;&gt;Setting assembly and nuget package metadata in .NET Core&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+        </content>
+        
+        <summary>Discover how to use MSBuild to set your NuGet package&#39;s metadata.</summary>
+        
+        
+        <category term="MSBuild" />
+        
+        <category term="NuGet" />
+        
+        
+        
+            
+                
+            
+
+            <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://kaylumah.nl/assets/images/posts/20210327/nuget-metadata/cover_image.png" />
+            <media:content medium="image" url="https://kaylumah.nl/assets/images/posts/20210327/nuget-metadata/cover_image.png" xmlns:media="http://search.yahoo.com/mrss/" />
+
+        
+    </entry>
+    
+    <entry>
+        <id>https://kaylumah.nl/2020/08/01/kaylumah-the-new-home-for-blogs-written-by-max-hamulyak.html</id>
+        <title>Guiding my thoughts home</title>
+        <author>
+            <name>Max Hamulyák</name>
+            <email>max@kaylumah.nl</email>
+            <uri>https:/kaylumah.nl</uri>
+        </author>
+        <published>2020-08-01T00:00:00.0000000+00:00</published>
+        <updated>2020-08-01T00:00:00.0000000+00:00</updated>
+        <link href="https://kaylumah.nl/2020/08/01/kaylumah-the-new-home-for-blogs-written-by-max-hamulyak.html" />
+        <content type="html">
+            &lt;p&gt;I have decided to pick up blogging again. I wrote a blog post in September 2019 on GitHooks in the past that you can find &lt;a href=&quot;https://medium.com/@kaylumah/using-c-code-in-your-git-hooks-66e507c01a0f&quot; class=&quot;external&quot; :=&quot;&quot;&gt;here&lt;/a&gt;. At the time, I decided to use the platform Medium to voice my thoughts. After I tweeted too &lt;a href=&quot;https://twitter.com/shanselman&quot; class=&quot;external&quot; :=&quot;&quot;&gt;@shanselman&lt;/a&gt; I got way more views on the article then I had expected. So when in 2020, I decided to found Kaylumah, I knew I wanted more than just a regular portfolio website. Since I am learning a lot from my mentor over at ilionx, I want to share lessons learned and start building my brand and identity.&lt;/p&gt;
+&lt;h2 id=&quot;so-what-can-you-expect-on-my-blog&quot;&gt;&lt;a href=&quot;#so-what-can-you-expect-on-my-blog&quot;&gt;So what can you expect on my blog&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Not sure about that yet, I suppose we will find out soon enough. The biggest problem will be time, but I will try and share ideas and or projects that I work on professionally, or even experiments I am trying.&lt;/p&gt;
+&lt;p&gt;I am a full-stack Software Engineer, and I specialize in backend development (mainly C# / Java). My current front-end framework of choice is Angular, but I have to admit that time, again, is an issue here. Because of time constraints, I cannot dabble in it al much as I would like.
+I suspect that I will write articles about my technology stack of choice.
+It will also include articles about Azure DevOps and Azure. Such as build pipelines and ARM templates. I might even write more articles about Git and Code quality.&lt;/p&gt;
+        </content>
+        
+        <summary>Moving all content to my own platform</summary>
+        
+        
+        <category term="Announcement" />
+        
+        
+        
+            
+                
+            
+
+            <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://kaylumah.nl/assets/images/posts/20200801/welcome/cover.png" />
+            <media:content medium="image" url="https://kaylumah.nl/assets/images/posts/20200801/welcome/cover.png" xmlns:media="http://search.yahoo.com/mrss/" />
+
+        
+    </entry>
+    
+    <entry>
+        <id>https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html</id>
+        <title>Using C# code in your git hooks</title>
+        <author>
+            <name>Max Hamulyák</name>
+            <email>max@kaylumah.nl</email>
+            <uri>https:/kaylumah.nl</uri>
+        </author>
+        <published>2019-09-07T00:00:00.0000000+00:00</published>
+        <updated>2021-03-21T00:00:00.0000000+00:00</updated>
+        <link href="https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" />
+        <content type="html">
+            &lt;h2 id=&quot;why-use-hooks&quot;&gt;&lt;a href=&quot;#why-use-hooks&quot;&gt;Why use hooks?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We, as developers, love platforms like GitHub, GitLab, Atlassian, Azure DevOps etc., as our managed git system and collaboration platform. We also love clean code and keep inventing new linters and rules to enforce it. In my opinion, every commit should allow the codebase to deploy to production. There is nothing worse than commits like “fixed style errors” or “fixed build”. These are often small mistakes you want to know as early as possible in your development cycle. You don’t want to break the build for the next developer because he pulled your ‘mistake’ or waste precious build minutes of your CI server. Say you have asked your teammate to review your code; in the meantime, the build server rejects your code. That means you have to go back and fix this, and your teammate has to come back and possibly review again after the changes (i.e., approvals reset on new commit). Doing so would waste a lot of time and effort.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;note&lt;/strong&gt;: I favour server-side hooks, but when using a SaaS solution, this is not always a possibility. I know I would not want someone to run arbitrary code on my servers. Unfortunately, a developer can bypass the client-side hooks. Until we can run, possibly sandboxed, server-side hooks on our prefered platform, we have to make the best of it by using client-side hooks.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Githooks are scripts that can execute on certain parts of the git lifecycle. Hooks must be executable, but other than that, hooks&#39; power is only limited to the developer&#39;s imagination. I have seen many samples of hooks written in JavaScript (node) using tools like &lt;a href=&quot;https://github.com/typicode/husky&quot; class=&quot;external&quot;&gt;husky&lt;/a&gt; and &lt;a href=&quot;https://github.com/conventional-changelog/commitlint&quot; class=&quot;external&quot;&gt;commitlint&lt;/a&gt; to enforce a certain way of working. When I was browsing the changes in the upcoming .NET Core 3.0 release, the concept of &lt;a href=&quot;https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-core-3-0#local-dotnet-tools&quot; class=&quot;external&quot;&gt;local-tools&lt;/a&gt; got me thinking. I knew of the existence of &lt;a href=&quot;https://www.hanselman.com/blog/CAndNETCoreScriptingWithTheDotnetscriptGlobalTool.aspx&quot; class=&quot;external&quot;&gt;dotnet-script&lt;/a&gt;, would that make it possible to C# in my GitHooks?&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;note&lt;/strong&gt;: in the past I have used a set-up with node since I occasionally work with front-end frameworks like Angular. Since I had node installed I could use it even in my pure backend projects to enforce commit messages and such. For me it felt dirty, since that would require team members to have node installed. Using the dotnet cli feels less as a forced decision since members are likely to have it installed already.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;lets-get-started&quot;&gt;&lt;a href=&quot;#lets-get-started&quot;&gt;Let’s get started!&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;When creating a git repository there is a folder called hooks where all the git hooks are placed. For every event there is a sample post-fixed with .sample that shows the possibility of each hook. This directory is not under source control and we are going to create our own directory to be able to share the hooks with the team.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;mkdir git-hooks-example  
+cd git-hooks-example  
+git init  
+dotnet new gitignore  
+dotnet new tool-manifest  
+dotnet tool install dotnet-script  
+dotnet tool install dotnet-format  
+mkdir .githooks
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;pre-commit-hook&quot;&gt;&lt;a href=&quot;#pre-commit-hook&quot;&gt;Pre-Commit Hook&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;To demonstrate we are going to create a plain hook. To check if it is working &lt;strong&gt;git commit -m “”&lt;/strong&gt; (using empty commit message will abort the commit). You should see the line pre-commit hook printed.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+Console.WriteLine(&amp;quot;pre-commit hook&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To make it executable run:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;find .git/hooks -type f -exec rm {} \;
+find .githooks -type f -exec chmod +x {} \;
+find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Since we can reference other files (and even load nuget packages) in our csx we will first create a couple of files so we can have code-reuse between the hooks.&lt;/p&gt;
+&lt;p&gt;Create a file called &lt;strong&gt;logger.csx&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;public class Logger
+{
+    public static void LogInfo(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Error.WriteLine(message);
+    }
+    public static void LogError(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine(message);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a file called &lt;strong&gt;command-line.csx&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#load &amp;quot;logger.csx&amp;quot;
+public class CommandLine
+{
+    public static string Execute(string command)
+    {
+        // according to: https://stackoverflow.com/a/15262019/637142
+        // thans to this we will pass everything as one command
+        command = command.Replace(&amp;quot;\&amp;quot;&amp;quot;, &amp;quot;\&amp;quot;\&amp;quot;&amp;quot;);
+        var proc = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = &amp;quot;/bin/bash&amp;quot;,
+                Arguments = &amp;quot;-c \&amp;quot;&amp;quot; + command + &amp;quot;\&amp;quot;&amp;quot;,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            }
+        };
+        proc.Start();
+        proc.WaitForExit();
+        if (proc.ExitCode != 0)
+        {
+            Logger.LogError(proc.StandardOutput.ReadToEnd());
+            return proc.ExitCode.ToString();
+        }
+        return proc.StandardOutput.ReadToEnd();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a file called &lt;strong&gt;dotnet-commands.csx&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;command-line.csx&amp;quot;
+public class DotnetCommands
+{
+    public static int FormatCode() =&amp;gt; ExecuteCommand(&amp;quot;dotnet format&amp;quot;);
+    public static int BuildCode() =&amp;gt; ExecuteCommand(&amp;quot;dotnet build&amp;quot;);
+
+    public static int TestCode() =&amp;gt; ExecuteCommand(&amp;quot;dotnet test&amp;quot;);
+
+    private static int ExecuteCommand(string command)
+    {
+        string response = CommandLine.Execute(command);
+        Int32.TryParse(response, out int exitCode);
+        return exitCode;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a file called &lt;strong&gt;git-commands.csx&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;command-line.csx&amp;quot;
+public class GitCommands
+{
+    public static void StashChanges()
+    {
+        CommandLine.Execute(&amp;quot;git stash -q --keep-index&amp;quot;);
+    }
+    public static void UnstashChanges()
+    {
+        CommandLine.Execute(&amp;quot;git stash pop -q&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now have a utility in place for Logging and running GIT and dotnet commands. Next we are going to start with out pre-commit hook. Create a file called &lt;strong&gt;pre-commit&lt;/strong&gt; The difference between this file and the others we just made is that we don’t specify the extension, and that using Shebang we explicitly load dotnet-script. For an explanation of each hook see the article posted below.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.atlassian.com/git/tutorials/git-hooks&quot; class=&quot;external&quot;&gt;Git Hooks | Atlassian Git Tutorial&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;git-commands.csx&amp;quot;
+#load &amp;quot;dotnet-commands.csx&amp;quot;
+
+// We&#39;ll only runchecks on changes that are a part of this commit so let&#39;s stash others
+GitCommands.StashChanges();
+
+int buildCode = DotnetCommands.BuildCode();
+
+// We&#39;re done with checks, we can unstash changes
+GitCommands.UnstashChanges();
+if (buildCode != 0) {
+    Logger.LogError(&amp;quot;Failed to pass the checks&amp;quot;);
+    Environment.Exit(-1);
+}
+// All checks have passed
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we run &lt;strong&gt;git commit -m “”&lt;/strong&gt; again this time we get an error saying Failed to pass the checks, which makes sense since we don’t have a project yet. We are going to create a simple sln consisting of a classlibary and a test libary.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;dotnet new sln  
+dotnet new classlib --framework netstandard2.1 --langVersion 8 --name SomeLib --output src/SomeLib  
+dotnet new xunit --output tests/SomeLibTests  
+dotnet sln add **/*.csproj 
+cd tests/SomeLibTests/  
+dotnet add reference ../../src/SomeLib/SomeLib.csproj  
+cd ../../  
+dotnet build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we use git commit -m “” one more time, we get the message about aborting the commit again. We now know that every commit will at least compile :-) If for example we remove the namespace ending curly brace from Class1 we get the error &lt;strong&gt;Class1.cs(7,6): error CS1513: }&lt;/strong&gt;. If we extend our pre-commit hook even further we can have &lt;a href=&quot;https://www.hanselman.com/blog/EditorConfigCodeFormattingFromTheCommandLineWithNETCoresDotnetFormatGlobalTool.aspx&quot; class=&quot;external&quot;&gt;dotnet-format&lt;/a&gt; and dotnet-test running on every commit. If we purposely write a failing test (1 equals 0 or something like that) the build won’t pass.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;git-commands.csx&amp;quot;
+#load &amp;quot;dotnet-commands.csx&amp;quot;
+
+Logger.LogInfo(&amp;quot;pre-commit hook&amp;quot;);
+
+// We&#39;ll only runchecks on changes that are a part of this commit so let&#39;s stash others
+GitCommands.StashChanges();
+
+int formatCode = DotnetCommands.FormatCode();
+int buildCode = DotnetCommands.BuildCode();
+int testCode = DotnetCommands.TestCode();
+
+// We&#39;re done with checks, we can unstash changes
+GitCommands.UnstashChanges();
+int exitCode = formatCode + buildCode + testCode;
+if (exitCode != 0) {
+    Logger.LogError(&amp;quot;Failed to pass the checks&amp;quot;);
+    Environment.Exit(-1);
+}
+// All checks have passed
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;prepare-commit-message-hook&quot;&gt;&lt;a href=&quot;#prepare-commit-message-hook&quot;&gt;Prepare-commit-message hook&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Thus far, we have not really used anything we need C# for; Admittedly we are using C# to execute shell commands. For our next hook we are going to use System.IO. Imagine as a team you have a commit-message convention. Let&#39;s say you want each commit message to include a reference to your issue tracker.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;type(scope?): subject  #scope is optional
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a file &lt;strong&gt;prepare-commit-msg&lt;/strong&gt; in this hook we can provide a convenient commit message place holder if the user did not supply a message. To actual enforce the message, you need the &lt;strong&gt;commit-msg&lt;/strong&gt; hook. In this example, we only create a message for feature branches.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;util.csx&amp;quot;
+#load &amp;quot;git-commands.csx&amp;quot;
+
+Logger.LogInfo(&amp;quot;prepare-commit-msg hook&amp;quot;);
+
+string commitMessageFilePath = Util.CommandLineArgument(Args, 0);
+string commitType = Util.CommandLineArgument(Args, 1);
+string commitHash = Util.CommandLineArgument(Args, 2);
+
+if (commitType.Equals(&amp;quot;message&amp;quot;)) {
+    // user supplied a commit message, no need to prefill.
+    Logger.LogInfo(&amp;quot;commitType message&amp;quot;);
+    Environment.Exit(0);
+}
+
+string[] files = GitCommands.ChangedFiles();
+for(int i = 0; i &amp;lt; files.Length; i++) {
+    // perhaps determine scope based on what was changed.
+    Logger.LogInfo(files[i]);
+}
+
+string branch = GitCommands.CurrentBranch();
+if (branch.StartsWith(&amp;quot;feature&amp;quot;)) {
+    string messageToBe = &amp;quot;feat: ISS-XXX&amp;quot;;
+    PrepareCommitMessage(commitMessageFilePath, messageToBe);
+}
+
+public static void PrepareCommitMessage(string messageFile, string message)
+{
+     string tempfile = Path.GetTempFileName();
+    using (var writer = new StreamWriter(tempfile))
+    using (var reader = new StreamReader(messageFile))
+    {
+        writer.WriteLine(message);
+        while (!reader.EndOfStream)
+            writer.WriteLine(reader.ReadLine());
+    }
+    File.Copy(tempfile, messageFile, true);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a new helper called &lt;strong&gt;util.csx&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;public class Util
+{
+    public static string CommandLineArgument(IList&amp;lt;string&amp;gt; Args, int position)
+    {
+        if (Args.Count() &amp;gt;= position + 1)
+        {
+            return Args[position];
+        }
+        return string.Empty;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;commit-msg-hook&quot;&gt;&lt;a href=&quot;#commit-msg-hook&quot;&gt;Commit-msg Hook&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The final local git hook I took for a spin is the commit-msg hook. It uses a regex to make sure the commit message is according the specified format.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;util.csx&amp;quot;
+#load &amp;quot;git-commands.csx&amp;quot;
+using System.Text.RegularExpressions;
+
+Logger.LogInfo(&amp;quot;commit-msg hook&amp;quot;);
+
+string commitMessageFilePath = Util.CommandLineArgument(Args, 0);
+string branch = GitCommands.CurrentBranch();
+Logger.LogInfo(commitMessageFilePath);
+Logger.LogInfo(branch);
+string message = GetCommitedMessage(commitMessageFilePath);
+Logger.LogInfo(message);
+
+const string regex = @&amp;quot;\b(feat|bug)\b(\({1}\b(core)\b\){1})?(:){1}(\s){1}(ISS-[0-9]{0,3}){1}&amp;quot;;
+var match = Regex.Match(message, regex);
+
+if (!match.Success) {
+    Logger.LogError(&amp;quot;Message does not match commit format&amp;quot;);
+    Environment.Exit(1);
+}
+
+public static string GetCommitedMessage(string filePath) {
+    return File.ReadAllLines(filePath)[0];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;pre-push-hook&quot;&gt;&lt;a href=&quot;#pre-push-hook&quot;&gt;pre push Hook&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;It is even possible to use NuGet packages in our hooks. Let say we want to prevent pushes to master (perhaps not even commits?). We can read a config file using Newtonsoft.Json and look for a protected branch and abort.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-csharp&quot;&gt;#!/usr/bin/env dotnet dotnet-script
+#r &amp;quot;nuget: Newtonsoft.Json, 12.0.2&amp;quot;
+#load &amp;quot;logger.csx&amp;quot;
+#load &amp;quot;config.csx&amp;quot;
+#load &amp;quot;git-commands.csx&amp;quot;
+using Newtonsoft.Json;
+
+string currentBranch = GitCommands.CurrentBranch().Trim();
+Config currentConfig = GetConfig();
+bool lockedBranch = currentConfig.ProtectedBranches.Contains(currentBranch);
+
+if (lockedBranch) {
+    Logger.LogError($&amp;quot;Trying to commit on protected branch &#39;{currentBranch}&#39;&amp;quot;);
+    Environment.Exit(1);
+}
+
+public static Config GetConfig()
+{
+    return JsonConvert.DeserializeObject&amp;lt;Config&amp;gt;(File.ReadAllText(&amp;quot;.githooks/config.json&amp;quot;));
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;conclusion&quot;&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;My current hooks are far from the best, and perhaps C# is not the fastest language to use in git hook. I do, however consider the experiment a success. I much rather code in C# than in shell script. Ideas for further improvement include&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;based on the list of changes, determine the scope of the change (i.e. only one directory changed we might know the scope)&lt;/li&gt;
+&lt;li&gt;configure the regex, allowed scopes, allowed types&lt;/li&gt;
+&lt;li&gt;improve pre-commit-msg for more scenarios&lt;/li&gt;
+&lt;li&gt;enforce users to use the hooks&lt;/li&gt;
+&lt;li&gt;managing versions of the hooks, on checkout old / different version of pull (with an update of the hooks) sync the directory. &lt;a href=&quot;https://www.viget.com/articles/two-ways-to-share-git-hooks-with-your-team/&quot; class=&quot;external&quot;&gt;(perhaps githook location)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let me know what you think :-)&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/maxhamulyak/git-hooks-example&quot; class=&quot;external&quot;&gt;maxhamulyak/git-hooks-example&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Happy Coding &#127867;&lt;/p&gt;
+        </content>
+        
+        <summary>Getting started with C# script in your client-side git hooks</summary>
+        
+        
+        <category term="Git" />
+        
+        <category term="GitHook" />
+        
+        <category term="CSharp" />
+        
+        <category term="Dotnet Core" />
+        
+        
+        
+            
+                
+            
+
+            <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://kaylumah.nl/assets/images/posts/20190907/githooks/cover.png" />
+            <media:content medium="image" url="https://kaylumah.nl/assets/images/posts/20190907/githooks/cover.png" xmlns:media="http://search.yahoo.com/mrss/" />
+
+        
+    </entry>
+    
+</feed>

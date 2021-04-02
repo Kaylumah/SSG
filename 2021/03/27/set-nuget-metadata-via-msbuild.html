@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" href="/assets/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/site.webmanifest" />
+        <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
+        
+        <link href="/compiled.css?v=34a81c6" rel="stylesheet" />
+        <link href="/assets/prism.css?v=34a81c6" rel="stylesheet" />
+        
+        <!-- Begin Kaylumah SEO tag v34a81c6 -->
+
+    <title>Set NuGet metadata via MSBuild</title>
+
+    <meta name="generator" content="Kaylumah v{ seo_tag.build.short_git_hash }}" />
+
+    <meta property="og:title" content="Set NuGet metadata via MSBuild" />
+
+
+    <meta name="author" content="max" />
+
+    <meta property="og:locale" content="en" />
+
+    <meta name="description" content="Discover how to use MSBuild to set your NuGet package's metadata." />
+    <meta property="og:description" content="Discover how to use MSBuild to set your NuGet package's metadata." />
+
+
+
+    
+    <link rel="canonical" href="https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html" />
+    <meta property="og:url" content="https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html" />
+
+
+
+
+    <meta property="og:site_name" content="Kaylumah, Max Hamulyák | Portfolio & Blog" />
+
+
+
+    <meta property="og:image" content="https://kaylumah.nl/assets/images/posts/20210327/nuget-metadata/cover_image.png" />
+
+
+
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-27T00:00:00.0000000+00:00" />
+
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:image" content="https://kaylumah.nl/assets/images/posts/20210327/nuget-metadata/cover_image.png" />
+
+
+    <meta property="twitter:title" content="Set NuGet metadata via MSBuild" />
+
+
+
+  
+    <meta name="twitter:site" content="@kaylumah" />
+  
+    <meta name="twitter:creator" content="@kaylumah" />
+  
+
+
+<script type="application/ld+json">
+{
+  "description": "Discover how to use MSBuild to set your NuGet package's metadata.",
+  "@type": "WebSite",
+  "publisher": {
+    "@type": "Organization",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaylumah.nl/assets/logo.svg"
+    }
+  },
+  "headline": "",
+  "sameAs": [],
+  "url": "https://kaylumah.nl",
+  "name": "Max Hamulyák",
+  "image": "https://kaylumah.nl/assets/images/social_preview.png",
+  "@context": "https://schema.org"
+}
+</script>
+
+
+
+
+
+<meta name="keywords" content="MSBuild,NuGet">
+
+<!-- End Kaylumah SEO tag -->
+        <!-- BEGIN Feed MetaData-->
+<link
+  type="application/atom+xml"
+  rel="alternate"
+  href="https://kaylumah.nl/feed.xml"
+  title="Kaylumah, Max Hamulyák | Portfolio & Blog RSS Feed"
+/>
+<!-- END Feed MetaData -->
+
+
+        <!--
+                                                   
+  _  __           _                       _        
+ | |/ /__ _ _   _| |_   _ _ __ ___   __ _| |__     
+ | ' // _` | | | | | | | | '_ ` _ \ / _` | '_ \    
+ | . \ (_| | |_| | | |_| | | | | | | (_| | | | |   
+ |_|\_\__,_|\__, |_|\__,_|_| |_| |_|\__,_|_| |_|   
+            |___/                                  
+                                                   
+ © Kaylumah. All rights reserved.                             
+ 34a81c6573bc82e04f7594ed8cc32b87b10ead4b                              
+ 2.1.3                               
+ 04/02/2021 11:30:38 +00:00
+ site: 5779c7fd-cd79-5890-b41c-18d7868b3777
+ page: e4248bde-cfa0-53af-b2fb-b33fdda02975                                  
+                                                   
+ You found 🧸                                      
+                                                   
+                                                   
+-->
+
+<script>
+
+  const consoleSignatureText = '%c👨‍💻 Thank you for your visit to my little spot on the internet, be welcome! 🧸';
+  const consoleSignatureStyle = `
+  font-size: 16px;
+  background: #4cae50;
+  color: white;
+  text-align: center;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 20px;
+`;
+  console.log(consoleSignatureText, consoleSignatureStyle);
+</script>
+        
+        <!-- Place your kit's code here -->
+        <script data-search-pseudo-elements defer src="https://kit.fontawesome.com/61d3312dd9.js" crossorigin="anonymous"></script>
+        
+        
+<script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-168549883-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" media="print" onload="this.media='all'" />
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        </noscript>
+
+
+    </head>
+    <body class="line-numbers bg-gray-50">
+        <div class="flex flex-col h-screen">
+            <header class="bg-gray-900">
+    <nav class="flex flex-wrap items-center justify-between py-4 px-4">
+        <div>
+            <a href="/" rel="author">
+                <!-- <img class="block md:hidden h-12 w-auto" src="/assets/logo_small.svg" alt="Kaylumah" /> -->
+                <img class="h-12 w-auto" src="/assets/logo.svg" alt="Kaylumah" />
+            </a>
+        </div>
+        <div class="flex md:hidden">
+            <button id="hamburger" class="inline-flex items-center justify-center p-2 rounded-md text-gray-100 hover:text-gray-400 hover:bg-gray-500">
+                <span class="sr-only">Open main menu</span>
+                <svg class="toggle block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="toggle hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="toggle hidden md:flex w-full md:w-auto text-right text-bold mt-5 md:mt-0 border-t-2 border-gray-600 md:border-none"><a href="/blog.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                Blog
+            </a></div>
+    </nav>
+     <script>
+        document.getElementById('hamburger').onclick = function toggleMenu() {
+        const navToggle = document.getElementsByClassName('toggle');
+            for (let i = 0; i < navToggle.length; i++) {
+                navToggle.item(i).classList.toggle('hidden');
+            }
+        };
+    </script>
+</header>
+
+            <main class="flex-1 py-4 text-gray-900">
+                <article class="py-16 px-6 sm:px-8">
+    <header>
+        <h1 class="flex flex-col items-center mx-auto">
+            <span class="text-gray-900 font-semibold tracking-wide uppercase">Article</span>
+            <span class="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Set NuGet metadata via MSBuild</span>
+        </h1>
+        <img alt="post cover-image" class="mx-auto" src="/assets/images/posts/20210327/nuget-metadata/cover_image.png" />
+        <hr class="mt-8 border-t-2 w-20 mx-auto" />
+    </header>
+    <div class="mt-8 mx-auto prose md:prose-lg lg:prose-xl">
+        <p>For .NET, the standard mechanism for sharing packages is NuGet. A <code>.nupkg</code> file is an archive that contains your compiled code (DLLs), other files related to your code, and a manifest containing metadata (<a href="https://docs.microsoft.com/en-us/nuget/what-is-nuget" class="external">source</a>). This blog post will show you how data in this manifest can be controlled by using MSBuild.</p>
+<p>For simplification purposes, my sample project will consist of only a single class library project. I like you to keep in mind that this would scale to many projects as Microsoft did with the <a href="https://github.com/dotnet/runtime" class="external">&quot;Microsoft.Extensions packages&quot;</a>. The sky is the limit.</p>
+<h2 id="setup"><a href="#setup">Setup</a></h2>
+<p>There are bits of this demo that work cross-platform and bits that require you to run on Windows. For example, I like the control the <a href="https://docs.microsoft.com/en-us/dotnet/core/tools/" class="external">.NET CLI</a> gives me when creating a new project. If you prefer to use <a href="https://visualstudio.microsoft.com/vs/" class="external">Visual Studio</a>, the result will remain the same.</p>
+<pre><code class="language-shell">$ dotnet new sln
+
+The template &quot;Solution File&quot; was created successfully.
+
+$ dotnet new classlib --framework netstandard2.0 --output src/Kaylumah.Logging.Extensions.Abstractions
+
+The template &quot;Class library&quot; was created successfully.
+
+Processing post-creation actions...
+Running 'dotnet restore' on src/Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj...
+  Determining projects to restore...
+  Restored C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj (in 84 ms).
+Restore succeeded.
+
+$ dotnet sln add src/Kaylumah.Logging.Extensions.Abstractions/Kaylumah.Logging.Extensions.Abstractions.csproj
+
+Project `src\Kaylumah.Logging.Extensions.Abstractions\Kaylumah.Logging.Extensions.Abstractions.csproj` added to the solution.
+</code></pre>
+<p>I chose <code>Kaylumah.Logging.Extensions.Abstractions</code> to keep inline and in style with the extension packages Microsoft provides. By default, the namespace of the assembly sets the unique package identifier. Of course, this only matters when publishing the package to a NuGet source like <code>https://nuget.org</code>. That is not this article's scope, as publishing the default template with only the empty <code>Class1.cs</code> file would not benefit anyone by sharing it.</p>
+<h2 id="why-do-we-even-need-metadata-in-our-packages"><a href="#why-do-we-even-need-metadata-in-our-packages">Why do we even need metadata in our packages?</a></h2>
+<p>Before showing you how I set metadata, I like to show you what happens without specifying any metadata. You can run the command <a href="https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-pack#description" class="external"><code>dotnet pack</code></a> for a single project or an entire solution. If you do it for the solution, only projects that are <code>&lt;IsPackable&gt;true&lt;/IsPackable&gt;</code> generate a package. The class library we created uses the <code>Microsoft.NET.Sdk</code> and is packable by default.</p>
+<pre><code class="language-shell">$ dotnet pack
+
+Microsoft (R) Build Engine version 16.8.3+39993bd9d for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Kaylumah.Logging.Extensions.Abstractions -&gt; C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\bin\Debug\netstandard2.0\Kaylumah.Logging.Extensions.Abstractions.dll
+  Successfully created package 'C:\Projects\NugetMetadata\src\Kaylumah.Logging.Extensions.Abstractions\bin\Debug\Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg'.
+</code></pre>
+<p>This command generated the package in my bin folder. Since I did not specify a configuration, it chose the default configuration, which is Debug. So how do we inspect <code>Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg</code>? My prefered way is the <a href="https://github.com/NuGetPackageExplorer/NuGetPackageExplorer" class="external">NuGet Package Explorer</a>, which is unfortunately only available on Windows.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/001_npe_initial_metadata.png" alt="Without Metadata in Package Explorer" /></p>
+<p>There seems to be no metadata set by default. Let's, for a quick moment, compare it to what Microsoft adds to its packages. We can do this by downloading <a href="https://www.nuget.org/api/v2/package/Microsoft.Extensions.Logging.Console/3.1.13" class="external">the package</a> from nuget.org and view it like we just did for <code>Kaylumah.Logging.Extensions.Abstractions.1.0.0.nupkg</code>. Alternatively, the NuGet Package Explorer also supports viewing metadata from remote sources such as nuget.org.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/002_console_logger_info.png" alt="Microsoft Extensions Logging Metadata in Package Explorer" /></p>
+<p>Now that is what I call metadata. Remember that <code>.nupkg</code> files are archives; this means we can easily verify what the explorer was telling us about our package.  You can do this by changing the extension from <code>.nupkg</code> to <code>.zip</code> and then extracting it. It contains <code>Kaylumah.Logging.Extensions.Abstractions.nuspec</code>, which is the manifest I was talking about in the introduction. At the moment, it looks like this:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;package xmlns=&quot;http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd&quot;&gt;
+  &lt;metadata&gt;
+    &lt;id&gt;Kaylumah.Logging.Extensions.Abstractions&lt;/id&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;authors&gt;Kaylumah.Logging.Extensions.Abstractions&lt;/authors&gt;
+    &lt;requireLicenseAcceptance&gt;false&lt;/requireLicenseAcceptance&gt;
+    &lt;description&gt;Package Description&lt;/description&gt;
+    &lt;dependencies&gt;
+      &lt;group targetFramework=&quot;.NETStandard2.0&quot; /&gt;
+    &lt;/dependencies&gt;
+  &lt;/metadata&gt;
+&lt;/package&gt;
+</code></pre>
+<p>So as expected, it matches what NuGet Package Explorer shows us. The default for both id and authors is the assembly namespace, whereas description defaults to &quot;Package Description&quot;, which tells our users nothing about what the package does.</p>
+<h2 id="how-do-we-set-metadata"><a href="#how-do-we-set-metadata">How do we set metadata?</a></h2>
+<p>Now that we have covered our basis, we can finally explain how we can set metadata via MSBuild.</p>
+<h3 id="set-metadata-from-csproj"><a href="#set-metadata-from-csproj">Set metadata from csproj</a></h3>
+<p>Since we are working on a single project, the logical place to set metadata is by editing our .csproj file. I will not cover every property today, so I refer you to <a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target" class="external">pack target docs</a> link. I will, however, cover properties I often use in my projects.</p>
+<p>So behind the scenes, what happens is that specific MSBuild properties map to properties in the .nuspec file. We have to either edit the existing <code>PropertyGroup</code> in our file or add one to set properties. In my opinion, every package should contain branding (like authors, company and copyright information), a helpful description and categorized by a series of tags. So in the example below, I have set these values.</p>
+<pre><code class="language-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+    &lt;Authors&gt;Max Hamulyák&lt;/Authors&gt;
+    &lt;!-- Note: Company does not get added to the .nuspec but it is part of the Assembly...Attribute so I often set them all --&gt;
+    &lt;Company&gt;Kaylumah&lt;/Company&gt;
+    &lt;Description&gt;Logging abstractions for Kaylumah.&lt;/Description&gt;
+    &lt;PackageTags&gt;logging;abstractions&lt;/PackageTags&gt;
+    &lt;Copyright&gt;Copyright (c) 2021 Kaylumah&lt;/Copyright&gt; 
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p>If we run <code>dotnet pack</code> now, we can immediately see that our package no longer has empty metadata.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/003_npe_author_metadata.png" alt="With Author Metadata in Package Explorer" /></p>
+<p>You can also verify this in Visual Studio by checking your projects properties and clicking on the <code>Package</code> tab.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/004_vs2019_author_metadata.png" alt="With Author Metadata in VS2019" /></p>
+<p>In the introduction, I talked about what exactly is a NuGet package. We are now at the part regarding other files. Since we already took care of branding, let us also add an icon. Our code is under license; how do we include it in the package?</p>
+<p>Add files named <code>Logo.png</code> and <code>LICENSE</code> to the folder containing our project. We can then use the tags <code>PackageIcon</code> and <code>PackageLicenseFile</code> respectfully. We also need to tell MSBuild that these files should be part of the package. The updated project file looks like this:</p>
+<pre><code class="language-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+    &lt;Authors&gt;Max Hamulyák&lt;/Authors&gt;
+    &lt;Company&gt;Kaylumah&lt;/Company&gt;
+    &lt;Description&gt;Logging abstractions for Kaylumah.&lt;/Description&gt;
+    &lt;PackageTags&gt;logging;abstractions&lt;/PackageTags&gt;
+    &lt;Copyright&gt;Copyright (c) 2021 Kaylumah&lt;/Copyright&gt;
+    &lt;PackageIcon&gt;Logo.png&lt;/PackageIcon&gt;
+    &lt;PackageLicenseFile&gt;LICENSE&lt;/PackageLicenseFile&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;None Include=&quot;Logo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+    &lt;None Include=&quot;LICENSE&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot;/&gt;
+  &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/005_npe_includingfiles_metadata.png" alt="Including FileMetadata" /></p>
+<p>Regarding these files, I like to say a couple of things before moving on to more advanced use cases.
+There is more than one way to set both the Icon and the License files for starters, which the Microsoft Docs <a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target" class="external">describe</a>. Both used to have a <code>Url</code> variant that would link to the Icon or License in question. Both of those options are now deprecated, and in the case of <code>PackageLicenseFile</code>, the alternative is  <code>PackageLicenseExpression</code>, which uses <code>SDPX</code> license identifiers.</p>
+<blockquote>
+<p><strong>note</strong>: For backwards compatibility, <code>PackageLicenseUrl</code> gets populated with <code>https://docs.microsoft.com/en-us/nuget/consume-packages/finding-and-choosing-packages#license-url-deprecation</code> if you choose to use <code>PackageLicenseFile</code> and with <code>https://licenses.nuget.org/MIT</code> for example, if your SPDX would be MIT.</p>
+</blockquote>
+<p>The second point I like to raise is regarding the file names.
+In my example, the value for <code>PackageIcon</code> and the name of my icon file match precisely; this is not necessary. What does matter is the name we specify in the package path. Failing to do so would, for example, trigger &quot;NU5046: The icon file 'NotAnIcon.png' does not exist in the package. See a couple of samples below:</p>
+<pre><code class="language-xml">&lt;!-- Visible 'False' hides the file in the Visual Studio explorer but still packages it under Logo.png --&gt;
+&lt;None Include=&quot;Logo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; Visible=&quot;false&quot; /&gt;
+
+&lt;!-- Link changes the name Visual Studio displays in the explorer but still packages it under Logo.png --&gt;
+&lt;None Include=&quot;Logo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; Link=&quot;NotAnIcon.png&quot; /&gt;
+
+&lt;!-- PackagePath rewrites the filename to Icon.png so PackageIcon remains unchanged --&gt;
+&lt;None Include=&quot;KaylumahLogo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;Icon.png&quot; /&gt;
+
+&lt;!-- PackagePath rewrites the filename to KaylumahLogo.png so set PackageIcon to &quot;KaylumahLogo&quot; --&gt;
+&lt;None Include=&quot;Icon.png&quot; Pack=&quot;true&quot; PackagePath=&quot;KaylumahLogo.png&quot; /&gt;
+</code></pre>
+<p>Rewriting via package path only works for files with an extension. For historical purposes, both NuGet and MSBuild treat these files as directories. If we had used <code>LICENSE.txt</code> over <code>LICENSE</code>, we would have been able to modify the name in the package. However, our <code>LICENSE</code> file can apply both the <code>Visible</code> and the <code>Link</code> example. For more information regarding Package Icons, see <a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-an-icon-image-file" class="external">package-icon</a>. For packing licenses without an extension see <a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-file-without-an-extension" class="external">package-license-1</a>, and licenses with an extension see <a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#packing-a-license-expression-or-a-license-file" class="external">package-license-2</a></p>
+<blockquote>
+<p>Keep in mind that by adding both Icon and License files to the package, the overall package size slightly increases; this can cause slower restore times on initial package downloads. This performance penalty is a trade-off you have to decide for your self. Given today's network speeds, I think the impact isn't noticeable.</p>
+</blockquote>
+<h3 id="set-metadata-for-multiple-projects"><a href="#set-metadata-for-multiple-projects">Set metadata for multiple projects</a></h3>
+<p>So lets for a moment, assume our project is a huge success. We are creating more and more extension libraries. Think about the vast number of packages in <code>dotnet/runtime</code>. Even if we would only include an implementation for <code>.Abstractions</code> package, it would be very time consuming to do this for every project. It would also violate the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" class="external">DRY principle</a>.</p>
+<p>To get started, create a file called <code>Directory.Build.props</code> at the root of your solution. The way Microsoft handles this file, and in precisely that casing, is starting from your project folder; it goes up till it finds a match or it reaches the root of your drive. This <code>Directory.Build.props</code> file follows the same syntax we use in our <code>.csproj</code> files. To demonstrate, remove only the <code>Copyright</code> tag from the project and recreate it in the <code>Directory.Build.props</code> file. Now is the perfect moment to also demonstrate something I have not yet told you. We are using MSBuild to populate our metadata, and thus we can use the full force of MSBuild. For example, we can reference other variables and even use built-in functions. So the thing about our current Copyright implementation is that if after <code>31/12/2021</code> I want to release the next version, I have to remember to update my copyright notice. We can achieve this by setting the copyright tag like below.</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Copyright&gt;Copyright © $(Company) $([System.DateTime]::Now.Year)&lt;/Copyright&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/006_npe_buildpropsv1.png" alt="Using BuildProps V1" /></p>
+<p>What happened? Something is wrong; why do I see the copyright year 2021, but not my company name? Before explaining it, let me prove it by adding a company tag to the <code>Directory.Build.props</code> with a different value. For example:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Company&gt;NotKaylumah&lt;/Company&gt;
+        &lt;Copyright&gt;Copyright © $(Company) $([System.DateTime]::Now.Year)&lt;/Copyright&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p>Unlike the <code>Copyright</code> tag do not remove the <code>Company</code> tag from the <code>.csproj</code> file. The result, this time, is a little different.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/007_npe_buildpropsv2.png" alt="Using BuildProps V2" /></p>
+<p>It appears that I have two different values for <code>Company</code>; this happens because <code>Directory.Build.props</code> gets imported before your project, and <code>Directory.Build.targets</code> gets imported after. The latest registration wins. That is why if we would read the <code>System.Reflection.AssemblyCopyrightAttribute</code> the value for <code>Company</code> is &quot;Kaylumah&quot;, but when we set <code>Copyright</code>, it is still &quot;NotKaylumah&quot;. You can verify this behaviour by running the preprocess command (<code>dotnet build -pp:fullproject.xml</code>). See <a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2019" class="external">msbuild comand line reference</a> for an explanation.</p>
+<blockquote>
+<p>Word of caution, you should not set every property this way. You should only set the values that are shared cross-project. For example, <code>Company</code> and <code>Copyright</code> are likely to be the same for every project. The <code>Authors</code> and <code>PackageTags</code> could be project-specific; heck, even <code>Description</code> could be reused if so desired. One thing for sure is that <code>Id</code> can not be recycled since every package requires a unique Id.</p>
+</blockquote>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Authors&gt;Max Hamulyák&lt;/Authors&gt;
+        &lt;Company&gt;Kaylumah&lt;/Company&gt;
+        &lt;Description&gt;Logging abstractions for Kaylumah.&lt;/Description&gt;
+        &lt;Copyright&gt;Copyright © $(Company) $([System.DateTime]::Now.Year)&lt;/Copyright&gt;
+        &lt;PackageTags&gt;logging;abstractions&lt;/PackageTags&gt;
+        &lt;PackageIcon&gt;Logo.png&lt;/PackageIcon&gt;
+        &lt;PackageLicenseFile&gt;LICENSE&lt;/PackageLicenseFile&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;None Include=&quot;$(MSBuildThisFileDirectory)Logo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+        &lt;None Include=&quot;$(MSBuildThisFileDirectory)LICENSE&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+    &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/008_npe_buildpropsv3.png" alt="Using BuildProps V3" /></p>
+<p>In case you are wondering where did <code>$(MSBuildThisFileDirectory)</code> come from, it is one of the predefined MSBuild variables you can use. It allows us to set the path without thinking about relative file paths; for other variables, see the <a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-reserved-and-well-known-properties?view=vs-2019" class="external">Microsoft Docs</a> on the topic.</p>
+<h3 id="bonus-chapter"><a href="#bonus-chapter">Bonus Chapter</a></h3>
+<p>I have referred to the list of properties before. There are a couple of handy ones we have not yet discussed. I am talking about the repository fields, making sure that an artefact can always trace back to a specific revision of your source code.</p>
+<table>
+<thead>
+<tr>
+<th>NuSpec</th>
+<th>MSBuild</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository/Url</td>
+<td>RepositoryUrl</td>
+<td>URL where sourcecode is located i.e. <code>https://github.com/NuGet/NuGet.Client.git</code></td>
+</tr>
+<tr>
+<td>Repository/Type</td>
+<td>RepositoryType</td>
+<td>The repository type i.e. <code>git</code></td>
+</tr>
+<tr>
+<td>Repository/Branch</td>
+<td>RepositoryBranch</td>
+<td>Optional repository branch info i.e. <code>main</code></td>
+</tr>
+<tr>
+<td>Repository/Commit</td>
+<td>RepositoryCommit</td>
+<td>Optional commit information i.e. <code>0e4d1b598f350b3dc675018d539114d1328189ef</code></td>
+</tr>
+</tbody>
+</table>
+<p>Before I explain this, I am getting a bit tired of running <code>dotnet pack</code> every time. Lucky for me, there is a way to generate a package on build. Update the <code>.csproj</code> file to look like this:</p>
+<pre><code class="language-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+    &lt;GeneratePackageOnBuild&gt;true&lt;/GeneratePackageOnBuild&gt;
+  &lt;/PropertyGroup&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<p>So back to repository info. MSBuild itself is not aware of things like source control. Fortunately, we can pass parameters from the outside to use inside MSBuild. For this, we have the <code>-p</code> or <code>-property</code> switch. The following script retrieves the URL, branch name and SHA1 hash from the current commit.</p>
+<pre><code class="language-shell">#!/bin/sh -x
+
+REPO_URL=$(git config --get remote.origin.url)
+REPO_BRANCH=$(git branch --show-current)
+REPO_COMMIT=$(git rev-parse HEAD)
+dotnet build -p:RepositoryUrl=&quot;$REPO_URL&quot; -p:RepositoryBranch=&quot;$REPO_BRANCH&quot; -p:RepositoryCommit=&quot;$REPO_COMMIT&quot; -p:RepositoryType=&quot;git&quot;
+</code></pre>
+<p>Remember, we now generate a package on build. Let us verify we see repo info by opening the created package in NuGet Package Explorer.</p>
+<p><img src="/assets/images/posts/20210327/nuget-metadata/009_npe_repoinfo.png" alt="Repo Info in Package Explorer" /></p>
+<p>Even though it is OK to add repo metadata this way, there is a better alternative. This alternative does more than add metadata; it also enables source code debugging from NuGet packages. How cool is that? This technology is called <a href="https://github.com/dotnet/sourcelink" class="external">Source Link</a>.</p>
+<p>Like before with the properties, I have no wish to add source link to every package separately. For this, create <code>Directory.Build.targets</code>, which looks like this:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+ &lt;Project&gt;
+     &lt;ItemGroup&gt;
+         &lt;PackageReference Include=&quot;Microsoft.SourceLink.GitHub&quot; Version=&quot;1.0.0&quot; PrivateAssets=&quot;all&quot; IsImplicitlyDefined=&quot;true&quot; /&gt;
+     &lt;/ItemGroup&gt;
+ &lt;/Project&gt;
+</code></pre>
+<p>To configure source link, we need to update <code>Directory.Build.props</code> as well.</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;Project&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Authors&gt;Max Hamulyák&lt;/Authors&gt;
+        &lt;Company&gt;Kaylumah&lt;/Company&gt;
+        &lt;Description&gt;Logging abstractions for Kaylumah.&lt;/Description&gt;
+        &lt;Copyright&gt;Copyright © $(Company) $([System.DateTime]::Now.Year)&lt;/Copyright&gt;
+        &lt;PackageTags&gt;logging;abstractions&lt;/PackageTags&gt;
+        &lt;PackageIcon&gt;Logo.png&lt;/PackageIcon&gt;
+        &lt;PackageLicenseFile&gt;LICENSE&lt;/PackageLicenseFile&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;None Include=&quot;$(MSBuildThisFileDirectory)Logo.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+        &lt;None Include=&quot;$(MSBuildThisFileDirectory)LICENSE&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;PublishRepositoryUrl&gt;true&lt;/PublishRepositoryUrl&gt;
+        &lt;EmbedUntrackedSources&gt;true&lt;/EmbedUntrackedSources&gt;
+        &lt;IncludeSymbols&gt;true&lt;/IncludeSymbols&gt;
+        &lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+    &lt;/PropertyGroup&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<p>To prove that it is still working, here is the entire <code>.nuspec</code> file after adding Source Link</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;package xmlns=&quot;http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd&quot;&gt;
+  &lt;metadata&gt;
+    &lt;id&gt;Kaylumah.Logging.Extensions.Abstractions&lt;/id&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;authors&gt;Max Hamulyák&lt;/authors&gt;
+    &lt;requireLicenseAcceptance&gt;false&lt;/requireLicenseAcceptance&gt;
+    &lt;license type=&quot;file&quot;&gt;LICENSE&lt;/license&gt;
+    &lt;licenseUrl&gt;https://aka.ms/deprecateLicenseUrl&lt;/licenseUrl&gt;
+    &lt;icon&gt;Logo.png&lt;/icon&gt;
+    &lt;description&gt;Logging abstractions for Kaylumah.&lt;/description&gt;
+    &lt;copyright&gt;Copyright © Kaylumah 2021&lt;/copyright&gt;
+    &lt;tags&gt;logging abstractions&lt;/tags&gt;
+    &lt;repository type=&quot;git&quot; url=&quot;https://github.com/Kaylumah/NugetMetadataDemo.git&quot; commit=&quot;3378cf33e0061b234c1f58e060489efd81e08586&quot; /&gt;
+    &lt;dependencies&gt;
+      &lt;group targetFramework=&quot;.NETStandard2.0&quot; /&gt;
+    &lt;/dependencies&gt;
+  &lt;/metadata&gt;
+&lt;/package&gt;
+</code></pre>
+<h2 id="closing-thoughts"><a href="#closing-thoughts">Closing Thoughts</a></h2>
+<p>We looked at setting metadata via MSBuild and sharing metadata between projects. You can take this even further by using MSBuild tasks to verify that packages must have a description like <a href="https://github.com/dotnet/arcade/blob/9a72efb067b74bb9147f9413ade6173b568ea1af/src/Microsoft.DotNet.Arcade.Sdk/tools/Workarounds.targets#L79" class="external">shown here</a>. It is also possible to create an entire SDK as Microsoft did with <a href="https://github.com/dotnet/arcade" class="external">Arcade</a>. Of course, Arcade goes much further than just specifying some metadata. You can read about how / why Microsoft did that <a href="https://devblogs.microsoft.com/dotnet/the-evolving-infrastructure-of-net-core/" class="external">on the devblogs</a>. I experimented with a custom SDK heavily inspired by Arcade, but that is a blog post for another day.</p>
+<p>For now, I hope I was able to teach you something about the power of MSBuild and how we can use it to manipulate our NuGet packages. If you have any questions, feel free to reach out.</p>
+<p>The corresponding source code for this article is on <a href="https://github.com/Kaylumah/NugetMetadataDemo" class="external">GitHub</a>, there you can see all the changes I addressed in sequence.</p>
+<p>See you next time, stay healthy and happy coding to all 🧸!</p>
+<hr />
+<h2 id="sources"><a href="#sources">Sources</a></h2>
+<p>This blog was written based on personal experience when creating packages. If not already explicitly linked in the text, here are some of the primary sources used in the article.</p>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019" class="external">Customize your build</a></li>
+<li><a href="https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets" class="external">MSBuild targets</a></li>
+<li><a href="https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package-dotnet-cli" class="external">Create a package dotnet cli</a></li>
+<li><a href="https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli" class="external">Create and publish a package using dotnet cli</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-reserved-and-well-known-properties?view=vs-2019" class="external">MSBuild reserved and well-known properties</a></li>
+<li><a href="https://cezarypiatek.github.io/post/setting-assembly-and-package-metadata/" class="external">Setting assembly and nuget package metadata in .NET Core</a></li>
+</ul>
+    </div>
+</article>
+            </main>
+            <footer class="bg-gray-900">
+    <div class="py-4 px-4">
+        <div class="flex justify-center space-x-6">
+            
+            <a target="_blank" rel=”noopener” href="https://www.linkedin.com/in/maxhamulyak" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">LinkedIn</span>
+                <em class="fab fa-linkedin fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://github.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">GitHub</span>
+                <em class="fab fa-github-square fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://twitter.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Twitter</span>
+                <em class="fab fa-twitter-square fa-lg"></em>
+            </a>
+        </div>
+        <div class="pt-2 flex flex-col text-center text-gray-100">
+            <span>© Kaylumah. All rights reserved.</span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/34a81c6573bc82e04f7594ed8cc32b87b10ead4b">34a81c6</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/711530755">129</a></span>
+        </div>
+        <div class="pt-2 flex justify-center space-x-6">
+            <a href="/" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Kaylumah</span>
+                <em class="fak fa-logo-kaylumah fa-lg"></em>
+            </a>
+        </div>
+    </div>
+</footer>
+        </div>
+        <script src="/assets/prism.js?v=34a81c6"></script>
+    </body>
+</html>
