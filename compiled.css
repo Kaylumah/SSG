@@ -561,6 +561,14 @@ video {
   max-width: 65ch;
 }
 
+.prose [class~="lead"] {
+  color: #4b5563;
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+}
+
 .prose a {
   color: #111827;
   text-decoration: none;
@@ -1204,6 +1212,14 @@ a.external svg {
   flex-shrink: 0;
 }
 
+.order-1 {
+  order: 1;
+}
+
+.order-2 {
+  order: 2;
+}
+
 .font-architect {
   font-family: 'Architects Daughter', cursive;
 }
@@ -1292,6 +1308,10 @@ a.external svg {
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.leading-6 {
+  line-height: 1.5rem;
 }
 
 .mx-auto {
@@ -1708,6 +1728,10 @@ a.external svg {
 }
 
 @media (min-width: 640px) {
+  .sm\:grid {
+    display: grid;
+  }
+
   .sm\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
@@ -1721,6 +1745,10 @@ a.external svg {
     padding-left: 2rem;
     padding-right: 2rem;
   }
+
+  .sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 768px) {
@@ -1732,6 +1760,13 @@ a.external svg {
   .md\:prose-lg p {
     margin-top: 1.3333333em;
     margin-bottom: 1.3333333em;
+  }
+
+  .md\:prose-lg [class~="lead"] {
+    font-size: 1.2222222em;
+    line-height: 1.4545455;
+    margin-top: 1.0909091em;
+    margin-bottom: 1.0909091em;
   }
 
   .md\:prose-lg blockquote {
@@ -1978,6 +2013,13 @@ a.external svg {
   .lg\:prose-xl p {
     margin-top: 1.2em;
     margin-bottom: 1.2em;
+  }
+
+  .lg\:prose-xl [class~="lead"] {
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin-top: 1em;
+    margin-bottom: 1em;
   }
 
   .lg\:prose-xl blockquote {
