@@ -31,8 +31,8 @@
 
 
     
-    <link rel="canonical" href="https://kaylumah.nl/404.html" />
-    <meta property="og:url" content="https://kaylumah.nl/404.html" />
+    <link rel="canonical" href="https://kaylumah.nl/tags.html" />
+    <meta property="og:url" content="https://kaylumah.nl/tags.html" />
 
 
 
@@ -109,7 +109,7 @@
  2.1.3                               
  04/04/2021 08:59:16 +00:00
  site: 5779c7fd-cd79-5890-b41c-18d7868b3777
- page: 231ca8b5-3fda-5f77-b070-66fe22a1d5f6                                  
+ page: 850aba36-9d0f-58aa-a99c-6dcbf3820c7f                                  
                                                    
  You found 🧸                                      
                                                    
@@ -194,20 +194,120 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 </header>
 
             <main class="flex-1 py-4 text-gray-900">
-                <!-- https://github.com/mdjamal/tailwindcss-rails-custom-error-page-templates/blob/master/static-illustrated/404.html -->
-<div class="container mx-auto px-4">
-  <section class="py-8 px-4 text-center">
-    <div class="max-w-auto mx-auto">
-      <div class="md:max-w-lg mx-auto">
-        <!-- llustration by Ouch.pics https://icons8.com/ouch/illustration/cherry-list-is-empty-1 -->
-        <img class="w-64 mx-auto" src="https://kaylumah.nl/assets/logo_small.svg" />
-      </div>
-      <h2 class="mt-8 uppercase text-xl lg:text-5xl font-black">We are sorry, Page not found!</h2>
-      <p class="mt-6 uppercase text-sm lg:text-base text-gray-900">The page you are looking for might have been removed had its name changed or is temporarily unavailable.</p>
-      <a class="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-light py-4 px-6 rounded-full inline-block uppercase shadow-md" href="/">Back To Homepage</a>
-    </div>
-  </section>
-</div>
+                <ul>
+    
+    <li>
+        <a href="/tags?tag=MSBuild">MSBuild (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=NuGet">NuGet (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=Announcement">Announcement (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=Git">Git (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=GitHook">GitHook (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=CSharp">CSharp (1)</a>
+    </li>
+    
+    <li>
+        <a href="/tags?tag=Dotnet%20Core">Dotnet Core (1)</a>
+    </li>
+    
+</ul>
+
+
+<section id="tag-MSBuild" style="display: none;">
+    <h1 class="font-architect text-xl">MSBuild</h1>
+    
+    <h2>Set NuGet metadata via MSBuild</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-NuGet" style="display: none;">
+    <h1 class="font-architect text-xl">NuGet</h1>
+    
+    <h2>Set NuGet metadata via MSBuild</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-Announcement" style="display: none;">
+    <h1 class="font-architect text-xl">Announcement</h1>
+    
+    <h2>Guiding my thoughts home</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-Git" style="display: none;">
+    <h1 class="font-architect text-xl">Git</h1>
+    
+    <h2>Using C# code in your git hooks</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-GitHook" style="display: none;">
+    <h1 class="font-architect text-xl">GitHook</h1>
+    
+    <h2>Using C# code in your git hooks</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-CSharp" style="display: none;">
+    <h1 class="font-architect text-xl">CSharp</h1>
+    
+    <h2>Using C# code in your git hooks</h2>
+    <hr />
+    
+</section>
+
+<section id="tag-Dotnet Core" style="display: none;">
+    <h1 class="font-architect text-xl">Dotnet Core</h1>
+    
+    <h2>Using C# code in your git hooks</h2>
+    <hr />
+    
+</section>
+
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedTag = urlParams.get('tag');
+    var tag = decodeURI(selectedTag);
+
+    var sections = document.getElementsByTagName("section");
+    for (var i = 0; i < sections.length; i++)
+    {
+        var section = sections[i];
+        var id = section.id;
+        if (id.startsWith("tag-"))
+        {
+            if (id === `tag-${tag}`)
+            {
+                section.style.display = 'block';
+            }
+            else
+            {
+                section.style.display = 'none';
+            }
+        }
+    }
+
+</script>
             </main>
             <footer class="bg-gray-900">
     <div class="py-4 px-4">
