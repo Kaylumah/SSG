@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <id>https://kaylumah.nl/feed.xml</id>
-    <updated>2021-04-04T14:10:30.1929281+00:00</updated>
+    <updated>2021-04-05T12:31:48.9737734+00:00</updated>
     <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
     <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
@@ -9,7 +9,7 @@
     <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
     <logo>https://kaylumah.nl/assets/logo.svg</logo>
     <rights>© Kaylumah. All rights reserved.</rights>
-    <generator uri="/feed.xml" version="63b1caf">Kaylumah Site Generator</generator>
+    <generator uri="/feed.xml" version="95548cd">Kaylumah Site Generator</generator>
     <entry>
         <id>https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html</id>
         <title>Set NuGet metadata via MSBuild</title>
