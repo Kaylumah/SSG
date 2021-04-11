@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" href="/assets/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/site.webmanifest" />
+        <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
+        
+        <link href="/compiled.css?v=8be8d30" rel="stylesheet" />
+        <link href="/assets/prism.css?v=8be8d30" rel="stylesheet" />
+        
+        <!-- Begin Kaylumah SEO tag v8be8d30 -->
+
+    <title>Experiment with Moq, an approach to writing mocks</title>
+
+    <meta name="generator" content="Kaylumah v8be8d30" />
+
+    <meta property="og:title" content="Experiment with Moq, an approach to writing mocks" />
+
+
+    <meta name="author" content="max" />
+
+    <meta property="og:locale" content="en" />
+
+    <meta name="description" content="An experiment to create reusable mocks in my testing code." />
+    <meta property="og:description" content="An experiment to create reusable mocks in my testing code." />
+
+
+
+    
+    <link rel="canonical" href="https://kaylumah.nl/2021/04/11/an-approach-to-writing-mocks.html" />
+    <meta property="og:url" content="https://kaylumah.nl/2021/04/11/an-approach-to-writing-mocks.html" />
+
+
+
+
+    <meta property="og:site_name" content="Kaylumah, Max Hamulyák | Portfolio & Blog" />
+
+
+
+    <meta property="og:image" content="https://kaylumah.nl/assets/images/posts/20210411/approach-to-writing-mocks/cover_image.png" />
+
+
+
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-04-11T00:00:00.0000000+00:00" />
+
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:image" content="https://kaylumah.nl/assets/images/posts/20210411/approach-to-writing-mocks/cover_image.png" />
+
+
+    <meta property="twitter:title" content="Experiment with Moq, an approach to writing mocks" />
+
+
+
+  
+    <meta name="twitter:site" content="@kaylumah" />
+  
+    <meta name="twitter:creator" content="@kaylumah" />
+  
+
+
+<script type="application/ld+json">
+{
+  "description": "An experiment to create reusable mocks in my testing code.",
+  "@type": "WebSite",
+  "publisher": {
+    "@type": "Organization",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaylumah.nl/assets/logo.svg"
+    }
+  },
+  "headline": "",
+  "sameAs": [],
+  "url": "https://kaylumah.nl",
+  "name": "Max Hamulyák",
+  "image": "https://kaylumah.nl/assets/images/social_preview.png",
+  "@context": "https://schema.org"
+}
+</script>
+
+
+
+
+
+<meta name="keywords" content="CSharp,Moq,Testing">
+
+<!-- End Kaylumah SEO tag -->
+        <!-- BEGIN Feed MetaData-->
+<link
+  type="application/atom+xml"
+  rel="alternate"
+  href="https://kaylumah.nl/feed.xml"
+  title="Kaylumah, Max Hamulyák | Portfolio & Blog RSS Feed"
+/>
+<!-- END Feed MetaData -->
+
+
+        <!--
+                                                   
+  _  __           _                       _        
+ | |/ /__ _ _   _| |_   _ _ __ ___   __ _| |__     
+ | ' // _` | | | | | | | | '_ ` _ \ / _` | '_ \    
+ | . \ (_| | |_| | | |_| | | | | | | (_| | | | |   
+ |_|\_\__,_|\__, |_|\__,_|_| |_| |_|\__,_|_| |_|   
+            |___/                                  
+                                                   
+ © Kaylumah. All rights reserved.                             
+ 8be8d30db259ed7f9930ab6f3acbb5935fe5589d                              
+ 2.1.3                               
+ 04/11/2021 15:38:32 +00:00
+ site: 5779c7fd-cd79-5890-b41c-18d7868b3777
+ page: 598867bd-aad1-56d9-b250-218549c61e8f                                  
+                                                   
+ You found 🧸                                      
+                                                   
+                                                   
+-->
+
+<script>
+
+  const consoleSignatureText = '%c👨‍💻 Thank you for your visit to my little spot on the internet, be welcome! 🧸';
+  const consoleSignatureStyle = `
+  font-size: 16px;
+  background: #4cae50;
+  color: white;
+  text-align: center;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 20px;
+`;
+  console.log(consoleSignatureText, consoleSignatureStyle);
+</script>
+        
+        <!-- Place your kit's code here -->
+        <script data-search-pseudo-elements defer src="https://kit.fontawesome.com/61d3312dd9.js" crossorigin="anonymous"></script>
+        
+        
+<script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-168549883-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" media="print" onload="this.media='all'" />
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        </noscript>
+
+
+    </head>
+    <body class="line-numbers bg-gray-50">
+        <div class="flex flex-col h-screen">
+            <header class="bg-gray-900">
+    <nav class="flex flex-wrap items-center justify-between py-4 px-4">
+        <div>
+            <a href="/" rel="author">
+                <!-- <img class="block md:hidden h-12 w-auto" src="/assets/logo_small.svg" alt="Kaylumah" /> -->
+                <img class="h-12 w-auto" src="/assets/logo.svg" alt="Kaylumah" />
+            </a>
+        </div>
+        <div class="flex md:hidden">
+            <button id="hamburger" class="inline-flex items-center justify-center p-2 rounded-md text-gray-100 hover:text-gray-400 hover:bg-gray-500">
+                <span class="sr-only">Open main menu</span>
+                <svg class="toggle block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="toggle hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="toggle hidden md:flex w-full md:w-auto text-right text-bold mt-5 md:mt-0 border-t-2 border-gray-600 md:border-none"><a href="/blog.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                Blog
+            </a></div>
+    </nav>
+     <script>
+        document.getElementById('hamburger').onclick = function toggleMenu() {
+        const navToggle = document.getElementsByClassName('toggle');
+            for (let i = 0; i < navToggle.length; i++) {
+                navToggle.item(i).classList.toggle('hidden');
+            }
+        };
+    </script>
+</header>
+
+            <main class="flex-1 py-4 text-gray-900">
+                <article class="py-16 px-6 sm:px-8">
+    <header>
+        <h1 class="flex flex-col items-center mx-auto">
+            <span class="text-gray-900 font-semibold tracking-wide uppercase">Article</span>
+            <span class="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Experiment with Moq, an approach to writing mocks</span>
+        </h1>
+        <img alt="post cover-image" class="mx-auto mt-1" src="/assets/images/posts/20210411/approach-to-writing-mocks/cover_image.png" />
+        <div class="mx-auto mt-1">
+            <dl class="rounded-lg sm:grid sm:grid-cols-3">
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Authored by
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        Max Hamulyák
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Posted on
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        <time datetime="2021-04-11">2021/04/11</time>
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Published in
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                    
+                    <a href="/tags.html#CSharp" class="text-gray-500">
+                        <span class="text-gray-600">#</span>CSharp
+                    </a>
+                    
+                    <a href="/tags.html#Moq" class="text-gray-500">
+                        <span class="text-gray-600">#</span>Moq
+                    </a>
+                    
+                    <a href="/tags.html#Testing" class="text-gray-500">
+                        <span class="text-gray-600">#</span>Testing
+                    </a>
+                    
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <hr class="mt-8 border-t-2 w-20 mx-auto" />
+    </header>
+    <div class="mt-8 mx-auto prose md:prose-lg lg:prose-xl">
+        <p>Recently I was looking into a new way to use mocks in my unit tests. My framework of choice to write unit tests is XUnit, whereas I use Moq to create Mocks. The theory behind Moq will still apply if you use a different testing framework, and perhaps some of the things I will demonstrate will be possible in other mocking frameworks.</p>
+<p>In many projects, I find that we look at essential things like:</p>
+<ul>
+<li>How should the architecture look?</li>
+<li>Which design patterns should we use?</li>
+<li>Making sure we follow the SOLID principles.</li>
+<li>How should we structure our code base?</li>
+</ul>
+<p>At the same time, I find that we do not give our tests the same amount of love.</p>
+<p>Wouter Roos, a colleague of mine over at ilionx, gave me this idea, and after experimenting a bit with it, I like it so much that I decided to blog about it. I tried hard to find other articles about it but did not find a post doing something similar. It wanted to make sure that the idea would also transfer to other aspects like how to mock <code>ILogger&lt;T&gt;</code>, that I stumbled upon <a href="https://adamstorr.azurewebsites.net/blog/mocking-ilogger-with-moq" class="external">an excellent article</a> by Adam Storr. Coincidentally Adam <a href="https://exceptionnotfound.net/using-moq-to-create-fluent-test-classes-in-asp-net-core/" class="external">linked</a> to a part in a series by Matthew Jones about Fluent Mocks. I have been reading articles written by  Matthew for some time now but missed this one. Matthews approach and, for that matter, Adam's proposal on testing ILogger are not quite the same as what I will propose, but I think these ideas will complement each other nicely. Funnily enough, I have had Adam's idea to create extensions methods on <code>Mock&lt;T&gt;</code> before when setting up a mock filesystem for use in unit tests. However, I can extend on that premise with what I learned from Wouter and make it even better.</p>
+<h2 id="system-setup"><a href="#system-setup">System Setup</a></h2>
+<p>Bear with me for a little while whilst we set up our demo scenario. In our architecture, we have defined three components. We have two resource access components and one manager. The manager is used to orchestrate our business code, and the resource access components interact with a resource, for example, a database.</p>
+<!-- 
+@startuml
+title Architecture Component Diagram
+
+component [Site\nManager] as Site
+component [Article\nAccess] as Article
+component [Author\nAccess] as Author
+
+
+Site - -> Article
+Site - -> Author
+@enduml
+ -->
+<p><img src="/assets/images/posts/20210411/approach-to-writing-mocks/architecture.png" alt="Architecture" /></p>
+<p>Since I am writing this blog post, what better example than a use case for a blogging platform. Imagine a platform where users can create and share their content. But you can only successfully start posts after you verified your account. In a sequence diagram, it might look something like this.</p>
+<!-- 
+@startuml
+title UC: Create Article
+autonumber "<b>[000]"
+
+SiteManager -> AuthorAccess: RetrieveAuthors
+AuthorAccess - -> SiteManager: RetrieveAuthorsResponse
+SiteManager -> SiteManager: is valid author?
+
+SiteManager -> ArticleAccess: CreateArticle
+ArticleAccess - -> SiteManager: CreateArticleResponse
+@enduml
+ -->
+<p><img src="/assets/images/posts/20210411/approach-to-writing-mocks/sequence.png" alt="Sequence" /></p>
+<p>I am going to use the dotnet CLI to create my project structure.</p>
+<pre><code class="language-shell">dotnet new sln
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Access.Article.Interface --output src/Components/Access/Article/Interface --framework netstandard2.1
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Access.Article.Service --output src/Components/Access/Article/Service --framework netstandard2.1
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Access.Author.Interface --output src/Components/Access/Author/Interface --framework netstandard2.1
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Access.Author.Service --output src/Components/Access/Author/Service --framework netstandard2.1
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Manager.Site.Interface --output src/Components/Manager/Site/Interface --framework netstandard2.1
+dotnet new classlib --name Kaylumah.AdventuresWithMock.Manager.Site.Service --output src/Components/Manager/Site/Service --framework netstandard2.1
+dotnet new xunit --name Test.Unit --output test/Unit --framework netcoreapp3.1
+</code></pre>
+<!-- Command to print file tree -->
+<!-- ls -aR | grep ":$" | perl -pe 's/:$//;s/[^-][^\/]*\//    /g;s/^    (\S)/└── \1/;s/(^    |    (?= ))/│   /g;s/    (\S)/└── \1/' -->
+<pre><code class="language-output">└── src
+│   └── Components
+│   │   └── Access
+│   │   │   └── Article
+│   │   │   │   └── Interface
+│   │   │   │   └── Service
+│   │   │   └── Author
+│   │   │   │   └── Interface
+│   │   │   │   └── Service
+│   │   └── Manager
+│   │   │   └── Site
+│   │   │   │   └── Interface
+│   │   │   │   └── Service
+└── test
+│   └── Unit
+</code></pre>
+<p>If everything went fine, you should have the following directory structure on disk. I like to split my components into an interface definition project and an actual implementation project. This split, of course, means that every <code>.Service</code> project needs to reference the corresponding <code>.Interface</code> project via <code>ProjectReference</code>. Because of our architecture, the SiteManager service needs to reference the interface projects of both access services. Finally, our unit test project needs to reference the service projects so we can test them.</p>
+<blockquote>
+<p>You may be wondering why I specified <code>--framework</code> after each dotnet new command; this is because it would otherwise default to <code>NET5.0</code>, which would be fine for a blog post like this, but since NET5 is not LTS, I mostly abstain from using it in my projects.</p>
+</blockquote>
+<p>I will not include every little DTO as part of this article since those classes will be available as part of <a href="https://github.com/kaylumah/AdventuresWithMock" class="external">the source code</a> in the end. For now, assume we have created our implementation to look like this.</p>
+<p>Our Article Access</p>
+<pre><code class="language-cs">using System;
+using System.Threading.Tasks;
+using Kaylumah.AdventuresWithMock.Access.Article.Interface;
+
+namespace Kaylumah.AdventuresWithMock.Access.Article.Service
+{
+    public class ArticleAccess : IArticleAccess
+    {
+        public Task&lt;CreateArticlesResponse&gt; CreateArticles(CreateArticlesRequest createArticlesRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteArticles(DeleteArticlesRequest deleteArticlesRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task&lt;FilterArticleResponse&gt; FilterArticles(FilterArticleCriteria filterArticleCriteria = null)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+</code></pre>
+<p>Our Author Access</p>
+<pre><code class="language-cs">using System;
+using System.Threading.Tasks;
+using Kaylumah.AdventuresWithMock.Access.Author.Interface;
+
+namespace Kaylumah.AdventuresWithMock.Access.Author.Service
+{
+    public class AuthorAccess : IAuthorAccess
+    {
+        public Task&lt;FilterAuthorResponse&gt; FilterAuthors(FilterAuthorCriteria filterAuthorCriteria = null)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+</code></pre>
+<p>And finally, our Site Manager, which should match our sequence diagram, looks like this.</p>
+<pre><code class="language-cs">using System.Linq;
+using System.Threading.Tasks;
+using Kaylumah.AdventuresWithMock.Access.Article.Interface;
+using Kaylumah.AdventuresWithMock.Access.Author.Interface;
+using Kaylumah.AdventuresWithMock.Manager.Site.Interface;
+
+namespace Kaylumah.AdventuresWithMock.Manager.Site.Service
+{
+    public class SiteManager : ISiteManager
+    {
+
+        private readonly IArticleAccess _articleAccess;
+        private readonly IAuthorAccess _authorAccess;
+
+        public SiteManager(IArticleAccess articleAccess, IAuthorAccess authorAccess)
+        {
+            _articleAccess = articleAccess;
+            _authorAccess = authorAccess;
+        }
+
+        public async Task CreateArticle(Interface.CreateArticleRequest createArticleRequest)
+        {
+            // Hardcoded for now, would probably come from JWT user claim.
+            var authorId = 666;
+
+            var authorsResponse = await _authorAccess.FilterAuthors(new FilterAuthorCriteria {
+                AuthorIds = new int[] { authorId }
+            });
+
+            var author = authorsResponse.Authors.SingleOrDefault(x =&gt; x.Id.Equals(authorId));
+
+            if (author == null)
+            {
+                return;
+            }
+
+            if (!author.Verfied)
+            {
+                return;
+            }
+
+            var article = new Access.Article.Interface.CreateArticleRequest
+            { 
+                AuthorId = authorId,
+                Title = createArticleRequest.Title,
+                Description = createArticleRequest.Content
+            };
+
+            var response = await _articleAccess.CreateArticles(new CreateArticlesRequest {
+                CreateArticleRequests = new Access.Article.Interface.CreateArticleRequest[] {
+                    article
+                }
+            });
+        }
+    }
+}
+</code></pre>
+<p>Wait just a minute! You forgot to implement the access components and only gave us the manager one. I did not ;-) It is to prove a point. Since we are going to mock our dependencies, we don't use the actual implementation.</p>
+<p>Thank you for bearing with me; now that we have all that in place, we can finally get to the heart of the matter and start our adventure with Mock.</p>
+<h2 id="the-problem"><a href="#the-problem">The Problem</a></h2>
+<p>I have yet to explain the reason behind the article. Let us look at how we might test this code traditionally with the following snippet.</p>
+<pre><code class="language-cs">[Fact]
+public async Task Test_SiteManager_CreateArticle_Traditionally()
+{
+    // Arange
+    var authorAccessMock = new Mock&lt;IAuthorAccess&gt;();
+    authorAccessMock.Setup(x =&gt; x.FilterAuthors(It.Is&lt;FilterAuthorCriteria&gt;(p =&gt; p.AuthorIds.Contains(666)))).ReturnsAsync(new FilterAuthorResponse {
+        Authors = new Author[] {
+            new Author {
+                Id = 666,
+                DisplayName = &quot;Max&quot;,
+                Verfied = true
+            }
+        }
+    });
+    var articleAccessMock = new Mock&lt;IArticleAccess&gt;();
+    articleAccessMock.Setup(x =&gt; x.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;())).ReturnsAsync(new CreateArticlesResponse {
+        Articles = new Article[] {
+            new Article {
+                Id = 1,
+                AuthorId = 666,
+                Title = &quot;...&quot;,
+                Description = &quot;...&quot;
+            }
+        }
+    });
+    ISiteManager sut = new SiteManager(articleAccessMock.Object, authorAccessMock.Object);
+
+    // Act
+    var request = new Kaylumah.AdventuresWithMock.Manager.Site.Interface.CreateArticleRequest { 
+        Title = &quot;Pretty Title&quot;,
+        Content = &quot;# AdventuresWithMock ...&quot;
+    };
+    await sut.CreateArticle(request);
+
+    // Assert
+    authorAccessMock.Verify(x =&gt; x.FilterAuthors(It.IsAny&lt;FilterAuthorCriteria&gt;()), Times.Once);
+    articleAccessMock.Verify(x =&gt; x.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;()), Times.Once);
+}
+</code></pre>
+<p>That is a lot of code to test a simple scenario. It is in its current form, even four lines longer than the code under test. Even worse, it's primarily boilerplate to set up the test. I often find myself repeating similar code for every test. Which is a violation of the &quot;Don't Repeat Yourself&quot; principle. So I am going to propose an alternative set up to my mock code. All you need to do is create a subclass from <code>Mock&lt;T&gt;</code> for the system you want to stub, and you are good to go.</p>
+<h2 id="mocking-data-access"><a href="#mocking-data-access">Mocking Data Access</a></h2>
+<p>We start with the AuthorsAccessMock. We will use our constructor to pass a <code>List&lt;Author&gt;</code> and use Moq's <code>Setup</code> method to return the internal state. Yes, that's right, because our mock is now a class we are stateful, this means we can now track state and changes on our mocks without relying on the <code>Verify</code> method.</p>
+<pre><code class="language-cs">using System.Collections.Generic;
+using System.Linq;
+using Kaylumah.AdventuresWithMock.Access.Author.Interface;
+using Moq;
+
+namespace Test.Unit.Mocks
+{
+    public class AuthorAccessMock : Mock&lt;IAuthorAccess&gt;
+    {
+        public List&lt;Author&gt; Authors { get; }
+        public AuthorAccessMock(List&lt;Author&gt; authors)
+        {
+            Authors = authors;
+
+            Setup(x =&gt; x.FilterAuthors(It.IsAny&lt;FilterAuthorCriteria&gt;()))
+                .ReturnsAsync((FilterAuthorCriteria criteria) =&gt; {
+
+                    IQueryable&lt;Author&gt; result = Authors.AsQueryable();
+                    if (criteria != null)
+                    {
+                        result = result.Where(x =&gt; criteria.AuthorIds.Contains(x.Id));
+                    }
+
+                    return new FilterAuthorResponse {
+                        Authors = result.ToArray()
+                    };
+                });
+        }
+    }
+}
+</code></pre>
+<p>So how does this impact our test? We create a new AuthorAccessMock and pass it to our system under test. Keep in mind this is still a <code>Mock&lt;T&gt;</code>, so to give it, we do <code>authorAccessMock.Object</code>. Our new setup drastically decreases the setup code in my test, and at the same time, it increases the reusability of my mocks</p>
+<pre><code class="language-cs">[Fact]
+public async Task Test_SiteManager_CreateArticle_RepoMocksDemo1()
+{
+    // Arange
+    var authorAccessMock = new AuthorAccessMock(new List&lt;Author&gt; {
+        new Author { Id = 666, DisplayName = &quot;Max&quot;, Verfied = false }
+    });
+    var articleAccessMock = new ArticleAccessMock();
+    ISiteManager sut = new SiteManager(articleAccessMock.Object, authorAccessMock.Object);
+
+    // Act
+    var request = new Kaylumah.AdventuresWithMock.Manager.Site.Interface.CreateArticleRequest
+    {
+        Title = &quot;Pretty Title&quot;,
+        Content = &quot;# AdventuresWithMock ...&quot;
+    };
+    await sut.CreateArticle(request);
+
+    // Assert
+    authorAccessMock.Verify(x =&gt; x.FilterAuthors(It.IsAny&lt;FilterAuthorCriteria&gt;()), Times.Once);
+    articleAccessMock.Verify(x =&gt; x.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;()), Times.Never);
+}
+</code></pre>
+<p>Our AuthorAccess was a bit boring. Let's extend on the stateful premise by building our ArticleAccessMock, which looks a lot like a CRUD repository. There are a couple of things in the following snippet I like to point out.</p>
+<ol>
+<li>I created another representation of our Article class, and this is so that our mock implementation does a soft delete. Since we are stateful, we can then make tests on that premise.</li>
+<li>I also track the requests DTOs to my service using Moq's Callback mechanism. This way, I can make assertions regarding the actual input request.</li>
+<li>I partially moved away from constructor set up to demonstrate this pattern nicely complements Matthew's FluentMocks pattern.</li>
+<li>Lastly, I also added a custom verify method, which takes a func as an argument; this makes it possible to write any validation I can imagine against my internal state.</li>
+</ol>
+<pre><code class="language-cs">using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kaylumah.AdventuresWithMock.Access.Article.Interface;
+using Moq;
+
+namespace Test.Unit.Mocks
+{
+    public class ArticleAccessMock : Mock&lt;IArticleAccess&gt;
+    {
+        public class ArticleMock
+        {
+            public int Id { get;set; }
+            public int AuthorId { get;set; }
+            public string Title { get;set; }
+            public string Content { get;set; }
+            public bool Removed { get;set; }
+        }
+
+        public List&lt;CreateArticlesRequest&gt; CreateArticlesRequests { get; } = new List&lt;CreateArticlesRequest&gt;();
+        public List&lt;DeleteArticlesRequest&gt; DeleteArticlesRequests { get; } = new List&lt;DeleteArticlesRequest&gt;();
+
+        private List&lt;ArticleMock&gt; _articleState = new List&lt;ArticleMock&gt;();
+        private int _numberOfArticlesBeforeCreate = 0;
+
+        public ArticleAccessMock()
+        {
+            Setup(access =&gt; access.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;()))
+                .Callback&lt;CreateArticlesRequest&gt;(request =&gt; {
+                    CreateArticlesRequests.Add(request);
+                    _numberOfArticlesBeforeCreate = _articleState.Count;
+                    var nextId = _numberOfArticlesBeforeCreate + 1;
+                    foreach(var createArticleRequest in request.CreateArticleRequests)
+                    {
+                        _articleState.Add(new ArticleMock {
+                            Id = nextId,
+                            AuthorId = createArticleRequest.AuthorId,
+                            Content = createArticleRequest.Description,
+                            Title = createArticleRequest.Title,
+                            Removed = false
+                        });
+                        nextId++;
+                    }
+                })
+                .ReturnsAsync(() =&gt; new CreateArticlesResponse {
+                    Articles = _articleState
+                    .Skip(_numberOfArticlesBeforeCreate)
+                    .Select(x =&gt; new Article
+                    {
+                        Id = x.Id,
+                        AuthorId = x.AuthorId,
+                        Description = x.Content,
+                        Title = x.Title
+                    })
+                    .ToArray()
+                });
+            
+            Setup(access =&gt; access.DeleteArticles(It.IsAny&lt;DeleteArticlesRequest&gt;()))
+                .Callback&lt;DeleteArticlesRequest&gt;(deleteArticlesRequest =&gt; {
+                    DeleteArticlesRequests.Add(deleteArticlesRequest);
+                    foreach(var deleteArticleRequests in deleteArticlesRequest.DeleteArticleRequests)
+                    {
+                        var existing = _articleState.SingleOrDefault(article =&gt; deleteArticleRequests.ArticleId == article.Id);
+                        if (existing != null)
+                        {
+                            existing.Removed = true;
+                        }
+                    }
+                });
+        }
+
+        public ArticleAccessMock SetupFilterArticles(List&lt;Article&gt; articles)
+        {
+            _articleState = articles.Select(x =&gt; new ArticleMock {
+                Id = x.Id,
+                AuthorId = x.AuthorId,
+                Content = x.Description,
+                Title = x.Title,
+                Removed = false
+            }).ToList();
+
+            Setup(x =&gt; x.FilterArticles(It.IsAny&lt;FilterArticleCriteria&gt;()))
+                .ReturnsAsync((FilterArticleCriteria criteria) =&gt; {
+                    IQueryable&lt;ArticleMock&gt; result = _articleState.AsQueryable();
+                    if (criteria != null)
+                    {
+                        result = result.Where(x =&gt; criteria.ArticleIds.Contains(x.Id));
+                    }
+                    return new FilterArticleResponse {
+                        Articles = result
+                            .Where(x =&gt; !x.Removed)
+                            .Select(x =&gt; new Article {
+                                Id = x.Id,
+                                AuthorId = x.AuthorId,
+                                Description = x.Content,
+                                Title = x.Title
+                            })
+                            .ToArray()
+                    };
+                });
+
+            return this;
+        }
+
+        public bool VerifyArticles(Func&lt;List&lt;ArticleMock&gt;, bool&gt; predicate)
+        {
+           return predicate(_articleState);
+        }
+    }
+}
+</code></pre>
+<p>I usually would not write a test for my Moq code. The following snippet's purpose is to demonstrate the statefulness of our mocks. On the other hand, our mocks are now lightweight implementations of service, so why not test them!</p>
+<pre><code class="language-cs">[Fact]
+public async Task Test_ArticleAccessMock_StatefullDemo1()
+{
+    // Arange
+    var articleAccessMock = new ArticleAccessMock()
+        .SetupFilterArticles(new List&lt;Article&gt; {});
+    var sut = articleAccessMock.Object;
+
+    // Act
+    var initialResponse = await sut.FilterArticles();
+    var createResponse = await sut.CreateArticles(new CreateArticlesRequest {
+        CreateArticleRequests = new CreateArticleRequest[] {
+            new CreateArticleRequest {
+                AuthorId = 666,
+                Description = &quot;1&quot;,
+                Title = &quot;1&quot;
+            },
+            new CreateArticleRequest {
+                AuthorId = 666,
+                Description = &quot;2&quot;,
+                Title = &quot;2&quot;
+            }
+        }
+    });
+
+    var afterAddResponse = await sut.FilterArticles();
+
+    await sut.DeleteArticles(new DeleteArticlesRequest {
+        DeleteArticleRequests = new DeleteArticleRequest[] {
+            new DeleteArticleRequest {
+                ArticleId = createResponse.Articles.First().Id
+            }
+        }
+    });
+
+    var afterRemoveResponse = await sut.FilterArticles();
+
+
+    // Assert
+    initialResponse.Should().NotBeNull();
+    initialResponse.Articles.Count().Should().Be(0, &quot;No articles initially&quot;);
+
+    afterAddResponse.Should().NotBeNull();
+    afterAddResponse.Articles.Count().Should().Be(2, &quot;We created two articles&quot;);
+
+    afterRemoveResponse.Should().NotBeNull();
+    afterRemoveResponse.Articles.Count().Should().Be(1, &quot;There is only one article left&quot;);
+
+    // Verify result with predicate logic instead if Mock.Verify()
+    articleAccessMock.VerifyArticles(articles =&gt; articles.Count(x =&gt; x.Removed) == 1).Should().BeTrue();
+}
+</code></pre>
+<p>You might ask yourself; Max, if you use a constructor to set up our mock, how would I deviate in my tests if I want to test error scenarios, for example? In that case, we might as well go full circle with the Fluent Mock approach. You could do it like the following snippet. You then choose to use the 'default' stateful mock or call the Setup methods you want to use.</p>
+<pre><code class="language-cs">public ArticleAccessMock MakeStateful(List&lt;Article&gt; articles)
+{
+    return this
+        .SetupFilterArticles(articles)
+        .SetupDeleteArticles()
+        .SetupCreateArticles();
+}
+
+public ArticleAccessMock SetupDeleteArticles() { /* ... */ }
+public ArticleAccessMock SetupCreateArticles() { /* ... */ }
+</code></pre>
+<h2 id="mocking-ilogger"><a href="#mocking-ilogger">Mocking ILogger</a></h2>
+<p>I did say that Adam's article also inspired me. So let us see how ILogger can implement stateful mocks. First, a quick reminder of what we are going to Mock. The <a href="https://github.com/dotnet/runtime/blob/3cbbadee12cc95bd62c70786d5408a2277a21e0a/src/libraries/Microsoft.Extensions.Logging.Abstractions/src/ILogger.cs#L23" class="external">ILogger interface</a> looks like this.</p>
+<pre><code class="language-cs">/// &lt;summary&gt;
+/// Writes a log entry.
+/// &lt;/summary&gt;
+/// &lt;param name=&quot;logLevel&quot;&gt;Entry will be written on this level.&lt;/param&gt;
+/// &lt;param name=&quot;eventId&quot;&gt;Id of the event.&lt;/param&gt;
+/// &lt;param name=&quot;state&quot;&gt;The entry to be written. Can be also an object.&lt;/param&gt;
+/// &lt;param name=&quot;exception&quot;&gt;The exception related to this entry.&lt;/param&gt;
+/// &lt;param name=&quot;formatter&quot;&gt;Function to create a &lt;see cref=&quot;string&quot;/&gt; message of the &lt;paramref name=&quot;state&quot;/&gt; and &lt;paramref name=&quot;exception&quot;/&gt;.&lt;/param&gt;
+/// &lt;typeparam name=&quot;TState&quot;&gt;The type of the object to be written.&lt;/typeparam&gt;
+void Log&lt;TState&gt;(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func&lt;TState, Exception?, string&gt; formatter);
+</code></pre>
+<p>I can not express how happy I am that I don't need to call the Logger like that. Luckily Microsoft offers a different extension method for every occasion. Unfortunately, Moq cannot test extension methods. Luckily for me, Adam figured out how to test it.</p>
+<p>Create a <code>LoggerMock&lt;T&gt;</code> class that implements <code>Mock&lt;ILogger&lt;T&gt;&gt;</code> we are not going to add something custom to it just yet.</p>
+<pre><code class="language-cs">using Microsoft.Extensions.Logging;
+using Moq;
+
+namespace Test.Unit.Mocks
+{
+    public class LoggerMock&lt;T&gt; : Mock&lt;ILogger&lt;T&gt;&gt;
+    {
+    }
+}
+</code></pre>
+<p>At the same time, we will use the final result from Adam's post as a helper method to test our logging.</p>
+<pre><code class="language-cs">public static Mock&lt;ILogger&lt;T&gt;&gt; VerifyLogging&lt;T&gt;(this Mock&lt;ILogger&lt;T&gt;&gt; logger, string expectedMessage, LogLevel expectedLogLevel = LogLevel.Debug, Times? times = null)
+{
+    times ??= Times.Once();
+
+    Func&lt;object, Type, bool&gt; state = (v, t) =&gt; v.ToString().CompareTo(expectedMessage) == 0;
+
+    logger.Verify(
+        x =&gt; x.Log(
+            It.Is&lt;LogLevel&gt;(l =&gt; l == expectedLogLevel),
+            It.IsAny&lt;EventId&gt;(),
+            It.Is&lt;It.IsAnyType&gt;((v, t) =&gt; state(v, t)),
+            It.IsAny&lt;Exception&gt;(),
+            It.Is&lt;Func&lt;It.IsAnyType, Exception, string&gt;&gt;((v, t) =&gt; true)), (Times)times);
+
+    return logger;
+}
+</code></pre>
+<p>With that in place, let's update the manager to log.</p>
+<pre><code class="language-cs">public class SiteManager : ISiteManager
+{
+
+    // ...
+    
+    private readonly ILogger _logger;
+
+    public SiteManager(IArticleAccess articleAccess, IAuthorAccess authorAccess, ILogger&lt;SiteManager&gt; logger)
+    {
+        // ...
+        _logger = logger;
+    }
+
+    public async Task CreateArticle(Interface.CreateArticleRequest createArticleRequest)
+    {
+        // Hardcoded for now, would probably come from JWT user claim.
+        var authorId = 666;
+
+        /// ...
+
+        if (author == null)
+        {
+            _logger.LogWarning($&quot;No author found for {authorId}&quot;);
+            return;
+        }
+
+        // ...
+    }
+}
+</code></pre>
+<p>To put it to the test:</p>
+<pre><code class="language-cs">[Fact]
+public async Task Test_SiteManager_CreateArticle_TestLogging()
+{
+    // Arange
+    var loggerMock = new LoggerMock&lt;SiteManager&gt;();
+    var authorAccessMock = new AuthorAccessMock(new List&lt;Author&gt; {});
+    var articleAccessMock = new ArticleAccessMock();
+    ISiteManager sut = new SiteManager(articleAccessMock.Object, authorAccessMock.Object, loggerMock.Object);
+
+    // Act
+    var request = new Kaylumah.AdventuresWithMock.Manager.Site.Interface.CreateArticleRequest
+    {
+        Title = &quot;Pretty Title&quot;,
+        Content = &quot;# AdventuresWithMock ...&quot;
+    };
+    await sut.CreateArticle(request);
+
+    // Assert
+    authorAccessMock.Verify(x =&gt; x.FilterAuthors(It.IsAny&lt;FilterAuthorCriteria&gt;()), Times.Once);
+    articleAccessMock.Verify(x =&gt; x.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;()), Times.Never);
+    loggerMock.VerifyLogging(&quot;No author found for 666&quot;, Microsoft.Extensions.Logging.LogLevel.Warning);
+}
+</code></pre>
+<p>Wait, did that just work on the first try? Did Adam's extension method not work on <code>Mock&lt;ILogger&lt;T&gt;&gt;</code>? Remember subclassing is an <code>is a</code> relation ship which means that our MockLogger qualifies for this extension method.</p>
+<p>What would happen if have a lot of traffic and log thousands upon thousands of requests. In that case, we can move to an alternative for methods such as <code>LogInformation</code>. For these scenarios, you can use <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0" class="external">LoggerMessage for high-performance logging</a>.</p>
+<pre><code class="language-cs">using System;
+using Microsoft.Extensions.Logging;
+
+namespace Kaylumah.AdventuresWithMock.Manager.Site.Service
+{
+    public static class LoggerExtensions
+    {
+        private static readonly Action&lt;ILogger, int, Exception&gt; _authorNotVerfied =
+            LoggerMessage.Define&lt;int&gt;(
+                LogLevel.Information,
+                EventIds.AuthorNotVerfied,
+                &quot;Author with Id {AuthorId} is not verfied!&quot;
+            );
+
+        public static void LogAuthorNotVerfied(this ILogger logger, int authorId)
+        {
+            _authorNotVerfied(logger, authorId, null);
+        }
+
+        private static class EventIds
+        {
+            public static readonly EventId AuthorNotVerfied = new(100, nameof(AuthorNotVerfied));
+        }
+    }
+}
+</code></pre>
+<pre><code class="language-cs">[Fact]
+public async Task Test_SiteManager_CreateArticle_TestLoggingExtensionMethod()
+{
+    // Arange
+    var loggerMock = new LoggerMock&lt;SiteManager&gt;();
+    var authorAccessMock = new AuthorAccessMock(new List&lt;Author&gt; {
+        new Author { Id = 666, DisplayName = &quot;Max&quot;, Verfied = false }
+    });
+    var articleAccessMock = new ArticleAccessMock();
+    ISiteManager sut = new SiteManager(articleAccessMock.Object, authorAccessMock.Object, loggerMock.Object);
+
+    // Act
+    var request = new Kaylumah.AdventuresWithMock.Manager.Site.Interface.CreateArticleRequest
+    {
+        Title = &quot;Pretty Title&quot;,
+        Content = &quot;# AdventuresWithMock ...&quot;
+    };
+    await sut.CreateArticle(request);
+
+    // Assert
+    authorAccessMock.Verify(x =&gt; x.FilterAuthors(It.IsAny&lt;FilterAuthorCriteria&gt;()), Times.Once);
+    articleAccessMock.Verify(x =&gt; x.CreateArticles(It.IsAny&lt;CreateArticlesRequest&gt;()), Times.Never);
+    loggerMock.VerifyLogging(&quot;Author with Id 666 is not verfied!&quot;, Microsoft.Extensions.Logging.LogLevel.Information);
+    loggerMock.VerifyEventIdWasCalled(new Microsoft.Extensions.Logging.EventId(100, &quot;AuthorNotVerfied&quot;));
+
+}
+</code></pre>
+<p>You are probably as surprised as I was that it did not work. As it turns out, LoggerMessage actual checks against LogLevel enabled. So add the following to our LoggerMock.</p>
+<pre><code class="language-cs">public LoggerMock&lt;T&gt; SetupLogLevel(LogLevel logLevel, bool enabled = true)
+{
+    Setup(x =&gt; x.IsEnabled(It.Is&lt;LogLevel&gt;(p =&gt; p.Equals(logLevel))))
+        .Returns(enabled);
+    return this;
+}
+</code></pre>
+<p>There is one last improvement I wish to make to our LoggerMock. Like our stateful repository mocks, I feel it would be beneficial to capture everything that goes into our mock—in my opinion, using Predicates and Linq gives me more control over my assertions than using mocks internals.</p>
+<p>Our final implementation looks like this:</p>
+<pre><code class="language-cs">using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Moq;
+
+namespace Test.Unit.Mocks
+{
+    public class LoggerMock&lt;T&gt; : Mock&lt;ILogger&lt;T&gt;&gt;
+    {
+        public class LogMessageMock
+        {
+            public LogLevel LogLevel { get;set; }
+            public EventId Event { get;set; }
+            public string Message { get;set; }
+        }
+
+        public List&lt;LogMessageMock&gt; Messsages { get; } = new List&lt;LogMessageMock&gt;();
+
+        public LoggerMock()
+        {
+            Setup(x =&gt; x.Log(
+                    It.IsAny&lt;LogLevel&gt;(),
+                    It.IsAny&lt;EventId&gt;(),
+                    It.Is&lt;It.IsAnyType&gt;((v, t) =&gt; true),
+                    It.IsAny&lt;Exception&gt;(),
+                    It.Is&lt;Func&lt;It.IsAnyType, Exception, string&gt;&gt;((v, t) =&gt; true)
+                )
+            )
+            .Callback(new InvocationAction(invocation =&gt;
+            {
+                // https://stackoverflow.com/questions/52707702/how-do-you-mock-ilogger-loginformation
+                // https://github.com/moq/moq4/issues/918
+                var logLevel = (LogLevel)invocation.Arguments[0];
+                var eventId = (EventId)invocation.Arguments[1];
+                var state = invocation.Arguments[2];
+                var exception = (Exception?)invocation.Arguments[3];
+                var formatter = invocation.Arguments[4];
+
+                var invokeMethod = formatter
+                    .GetType()
+                    .GetMethod(&quot;Invoke&quot;);
+
+                var logMessage = (string?)invokeMethod?.Invoke(formatter, new[] { state, exception });
+                Messsages.Add(new LogMessageMock {
+                    Event = eventId,
+                    LogLevel = logLevel,
+                    Message = logMessage
+                });
+            }));
+        }
+
+        public LoggerMock&lt;T&gt; SetupLogLevel(LogLevel logLevel, bool enabled = true)
+        {
+            Setup(x =&gt; x.IsEnabled(It.Is&lt;LogLevel&gt;(p =&gt; p.Equals(logLevel))))
+                .Returns(enabled);
+            return this;
+        }
+    }
+}
+</code></pre>
+<h2 id="mocking-httpclient"><a href="#mocking-httpclient">Mocking HttpClient</a></h2>
+<p>Even though our article is getting to be on the length side, I found it helpful to include at least one more example. I could rewrite the filesystem sample I mentioned to match this pattern, but I decided to do that later. I thought it would be more useful to look into mocking an HttpClient. One option would be to hide HttpClient behind an interface, but since our ArticleAccess is already the lowest point in our architecture, I see no need to hide that we use a HttpClient.</p>
+<p>Since this is purely a demonstration, I am not going to set up an HTTP Server. Luckily we can use https://jsonplaceholder.typicode.com/posts for our needs. Suppose our CreateArticles method looked like this.</p>
+<pre><code class="language-cs">public async Task&lt;CreateArticlesResponse&gt; CreateArticles(CreateArticlesRequest createArticlesRequest)
+{
+    // NOTE: not going to call them in a loop, just for demo purposes.
+    var json = JsonSerializer.Serialize(createArticlesRequest.CreateArticleRequests.First());
+    var response = await _httpClient.PostAsync(&quot;https://jsonplaceholder.typicode.com/posts&quot;, new StringContent(json));
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception(&quot;Something went horribly wrong!&quot;);
+    }
+    var responseText = await response.Content.ReadAsStringAsync();
+    // Map it to response
+    return new CreateArticlesResponse {};
+}
+</code></pre>
+<p>Unfortunately, you cannot achieve this by mocking HttpClient. You need to Mock HttpMessageHandler. Depending on your needs, it might look something like the following snippet. (Based on <a href="https://stackoverflow.com/a/57199040/1936600" class="external">this stackoverflow answer</a>)</p>
+<pre><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using Moq.Language;
+using Moq.Protected;
+
+namespace Test.Unit.Mocks
+{
+    public class HttpClientMock : Mock&lt;HttpMessageHandler&gt;
+    {
+        private readonly List&lt;Tuple&lt;HttpStatusCode, HttpContent&gt;&gt; _responses;
+        public HttpClientMock(List&lt;Tuple&lt;HttpStatusCode, HttpContent&gt;&gt; responses) : base(MockBehavior.Strict)
+        {
+            _responses = responses;
+            SetupResponses();
+        }
+
+        private void SetupResponses()
+        {
+            var handlerPart = this.Protected().SetupSequence&lt;Task&lt;HttpResponseMessage&gt;&gt;(
+              &quot;SendAsync&quot;,
+              ItExpr.IsAny&lt;HttpRequestMessage&gt;(),
+              ItExpr.IsAny&lt;CancellationToken&gt;()
+           );
+
+            foreach (var item in _responses)
+            {
+                handlerPart = AdddReturnPart(handlerPart, item.Item1, item.Item2);
+            }
+        }
+
+        private ISetupSequentialResult&lt;Task&lt;HttpResponseMessage&gt;&gt; AdddReturnPart(ISetupSequentialResult&lt;Task&lt;HttpResponseMessage&gt;&gt; handlerPart,
+        HttpStatusCode statusCode, HttpContent content)
+        {
+            return handlerPart.ReturnsAsync(new HttpResponseMessage()
+            {
+                StatusCode = statusCode,
+                Content = content
+            });
+        }
+
+        public static implicit operator HttpClient (HttpClientMock mock)
+        {
+            // Since neither HttpClient or HttpClientMock is an interface we can use implicit operator to convert.
+            // Safes us a call to mock.Object in the test code.
+            return new HttpClient(mock.Object) {};
+        }
+    }
+}
+</code></pre>
+<p>The corresponding test would look like</p>
+<pre><code class="language-csharp">[Fact]
+public async Task Test_ArticleAccess_Returns200OK()
+{
+    var createArticleResponse = new StringContent(&quot;{ 'id':'anId' }&quot;, Encoding.UTF8, &quot;application/json&quot;);
+    var httpClient = new HttpClientMock(new List&lt;Tuple&lt;HttpStatusCode, HttpContent&gt;&gt; {
+        new Tuple&lt;HttpStatusCode, HttpContent&gt;(HttpStatusCode.OK, createArticleResponse),
+    });
+    var articleAccess = new ArticleAccess(httpClient);
+    await articleAccess.CreateArticles(new CreateArticlesRequest{
+        CreateArticleRequests = new CreateArticleRequest[] {
+            new CreateArticleRequest {
+                AuthorId = 666,
+                Description = &quot;...&quot;,
+                Title = &quot;Demo&quot;
+            }
+        }
+    });
+}
+</code></pre>
+<h2 id="summary"><a href="#summary">Summary</a></h2>
+<p>That concludes my experiment for the day. I have shown three instances where you can apply your custom subclasses of Mock<T>. The way I see it, it offers three distinct advantages:</p>
+<ol>
+<li>Test code and mock code is separated.</li>
+<li>Mock code is reusable across tests.</li>
+<li>Stateful mocking allows for more readable verification in tests.</li>
+</ol>
+<p>Of course, creating a mock library will take some time. You could argue if it's worth the time to make a duplicate, albeit a simplified version of your data access. My personal opinion is that it makes debugging and reasoning about my tests easier than taking a deep dive in Invocations and Verify mock provides. As I have hopefully demonstrated is that one does not exclude the other. I think it can complement one and other.</p>
+<p>I am glad about the early results of my experiment, hence me writing this blog post. Over time you can evolve these mocks to be even better. For example, change tracking of entities could potentially be used cross mock. The HttpClientMock could use some more love. Imagine hiding every detail like StatusCode, HttpResponseMessage from the tester. I could have saved it for another blog, but I shared this abstraction to start a dialogue with my team about testing and test set up.</p>
+<p>As always, if you have any questions, feel free to reach out. I am curious to hear what you all think about this approach. Do you have suggestions or alternatives? I would love to hear about them.</p>
+<p>The corresponding source code for this article is on <a href="https://github.com/kaylumah/AdventuresWithMock" class="external">GitHub</a>.</p>
+<p>See you next time, stay healthy and happy coding to all 🧸!</p>
+<h2 id="sources"><a href="#sources">Sources</a></h2>
+<ul>
+<li><a href="https://exceptionnotfound.net/using-moq-to-create-fluent-test-classes-in-asp-net-core/" class="external">Fluent Mocks</a></li>
+<li><a href="https://adamstorr.azurewebsites.net/blog/mocking-ilogger-with-moq" class="external">Testing ILogger</a></li>
+<li><a href="https://github.com/Moq/moq4/wiki/Quickstart" class="external">Moq Quickstart</a></li>
+<li><a href="https://medium.com/webcom-engineering-and-product/a-cleaner-way-to-create-mocks-in-net-6e039c3d1db0" class="external">Cleaner way to create mocks</a></li>
+<li><a href="https://stackoverflow.com/a/57199040/1936600" class="external">Testing HttpClient</a></li>
+</ul>
+    </div>
+</article>
+            </main>
+            <footer class="bg-gray-900">
+    <div class="py-4 px-4">
+        <div class="flex justify-center space-x-6">
+            
+            <a target="_blank" rel=”noopener” href="https://www.linkedin.com/in/maxhamulyak" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">LinkedIn</span>
+                <em class="fab fa-linkedin fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://github.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">GitHub</span>
+                <em class="fab fa-github-square fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://twitter.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Twitter</span>
+                <em class="fab fa-twitter-square fa-lg"></em>
+            </a>
+        </div>
+        <div class="pt-2 flex flex-col text-center text-gray-100">
+            <span>© Kaylumah. All rights reserved.</span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/8be8d30db259ed7f9930ab6f3acbb5935fe5589d">8be8d30</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/738499015">142</a></span>
+        </div>
+        <div class="pt-2 flex justify-center space-x-6">
+            <a href="/" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Kaylumah</span>
+                <em class="fak fa-logo-kaylumah fa-lg"></em>
+            </a>
+        </div>
+    </div>
+</footer>
+        </div>
+        <script src="/assets/prism.js?v=8be8d30"></script>
+    </body>
+</html>
