@@ -1647,6 +1647,10 @@ a.external svg {
   max-width: 100%;
 }
 
+.max-w-prose {
+  max-width: 65ch;
+}
+
 .min-h-0 {
   min-height: 0px;
 }
@@ -2942,6 +2946,10 @@ a.external svg {
 
   .md\:max-w-lg {
     max-width: 32rem;
+  }
+
+  .md\:max-w-full {
+    max-width: 100%;
   }
 
   .md\:opacity-50 {
