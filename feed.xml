@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <id>https://kaylumah.nl/feed.xml</id>
-    <updated>2021-04-15T08:31:04.3080164+00:00</updated>
+    <updated>2021-04-15T14:44:28.6822360+00:00</updated>
     <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
     <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
@@ -9,7 +9,7 @@
     <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
     <logo>https://kaylumah.nl/assets/logo.svg</logo>
     <rights>© Kaylumah. All rights reserved.</rights>
-    <generator uri="/feed.xml" version="ae344cb">Kaylumah Site Generator</generator>
+    <generator uri="/feed.xml" version="bdaf5ea">Kaylumah Site Generator</generator>
     <entry>
         <id>https://kaylumah.nl/2021/04/11/an-approach-to-writing-mocks.html</id>
         <title>Experiment with Moq, an approach to writing mocks</title>
