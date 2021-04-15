@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://kaylumah.nl/</loc>
-        <lastmod>2021-04-15T14:43:52.3588633+00:00</lastmod>
+        <lastmod>2021-04-15T20:07:26.9271188+00:00</lastmod>
     </url>
     <url>
         <loc>https://kaylumah.nl/2021/03/27/set-nuget-metadata-via-msbuild.html</loc>
@@ -22,15 +22,15 @@
     </url>
     <url>
         <loc>https://kaylumah.nl/types.html</loc>
-        <lastmod>2021-04-15T14:43:52.3268633+00:00</lastmod>
+        <lastmod>2021-04-15T20:07:26.8951183+00:00</lastmod>
     </url>
     <url>
         <loc>https://kaylumah.nl/tags.html</loc>
-        <lastmod>2021-04-15T14:43:52.3268633+00:00</lastmod>
+        <lastmod>2021-04-15T20:07:26.8951183+00:00</lastmod>
     </url>
     <url>
         <loc>https://kaylumah.nl/blog.html</loc>
-        <lastmod>2021-04-15T14:43:52.3268633+00:00</lastmod>
+        <lastmod>2021-04-15T20:07:26.8951183+00:00</lastmod>
     </url>
 </urlset>
 <!-- https://github.com/jekyll/jekyll-sitemap/blob/master/lib/sitemap.xml -->
