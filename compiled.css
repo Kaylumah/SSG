@@ -1357,6 +1357,10 @@ a.external svg {
   display: inline-grid;
 }
 
+.contents {
+  display: contents;
+}
+
 .hidden {
   display: none;
 }

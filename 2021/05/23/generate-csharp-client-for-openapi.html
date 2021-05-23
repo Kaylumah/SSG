@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" href="/assets/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/site.webmanifest" />
+        <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
+        
+        <link href="/compiled.css?v=84241ac" rel="stylesheet" />
+        <link href="/assets/prism.css?v=84241ac" rel="stylesheet" />
+        
+        <!-- Begin Kaylumah SEO tag v84241ac -->
+
+    <title>Generate C# client for OpenAPI</title>
+
+    <meta name="generator" content="Kaylumah v84241ac" />
+
+    <meta property="og:title" content="Generate C# client for OpenAPI" />
+
+
+    <meta name="author" content="max" />
+
+    <meta property="og:locale" content="en" />
+
+    <meta name="description" content="A look at using OpenAPI clients in C#" />
+    <meta property="og:description" content="A look at using OpenAPI clients in C#" />
+
+
+
+    
+    <link rel="canonical" href="https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html" />
+    <meta property="og:url" content="https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html" />
+
+
+
+
+    <meta property="og:site_name" content="Kaylumah, Max Hamulyák | Portfolio & Blog" />
+
+
+
+    <meta property="og:image" content="https://kaylumah.nl/assets/images/posts/20210523/generate-csharp-client-for-openapi/cover_image.png" />
+
+
+
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-05-23T00:00:00.0000000+00:00" />
+
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:image" content="https://kaylumah.nl/assets/images/posts/20210523/generate-csharp-client-for-openapi/cover_image.png" />
+
+
+    <meta property="twitter:title" content="Generate C# client for OpenAPI" />
+
+
+
+  
+    <meta name="twitter:site" content="@kaylumah" />
+  
+    <meta name="twitter:creator" content="@kaylumah" />
+  
+
+
+<script type="application/ld+json">
+{
+  "description": "A look at using OpenAPI clients in C#",
+  "@type": "WebSite",
+  "publisher": {
+    "@type": "Organization",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaylumah.nl/assets/logo.svg"
+    }
+  },
+  "headline": "",
+  "sameAs": [],
+  "url": "https://kaylumah.nl",
+  "name": "Max Hamulyák",
+  "image": "https://kaylumah.nl/assets/images/social_preview.png",
+  "@context": "https://schema.org"
+}
+</script>
+
+
+
+
+
+<meta name="keywords" content="CSharp,OpenAPI,NSwag,Swashbuckle">
+
+<!-- End Kaylumah SEO tag -->
+        <!-- BEGIN Feed MetaData-->
+<link
+  type="application/atom+xml"
+  rel="alternate"
+  href="https://kaylumah.nl/feed.xml"
+  title="Kaylumah, Max Hamulyák | Portfolio & Blog RSS Feed"
+/>
+<!-- END Feed MetaData -->
+
+
+        <!--
+                                                   
+  _  __           _                       _        
+ | |/ /__ _ _   _| |_   _ _ __ ___   __ _| |__     
+ | ' // _` | | | | | | | | '_ ` _ \ / _` | '_ \    
+ | . \ (_| | |_| | | |_| | | | | | | (_| | | | |   
+ |_|\_\__,_|\__, |_|\__,_|_| |_| |_|\__,_|_| |_|   
+            |___/                                  
+                                                   
+ © Kaylumah. All rights reserved.                             
+ 84241ac86909d2e80ac7b3f91c860aa8edd1e631                              
+ 2.1.3                               
+ 05/23/2021 21:26:01 +00:00
+ site: 5779c7fd-cd79-5890-b41c-18d7868b3777
+ page: f917bef9-d62d-55cd-85a5-c5318338e46c                                  
+                                                   
+ You found 🧸                                      
+                                                   
+                                                   
+-->
+
+<script>
+
+  const consoleSignatureText = '%c👨‍💻 Thank you for your visit to my little spot on the internet, be welcome! 🧸';
+  const consoleSignatureStyle = `
+  font-size: 16px;
+  background: #4cae50;
+  color: white;
+  text-align: center;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 20px;
+`;
+  console.log(consoleSignatureText, consoleSignatureStyle);
+</script>
+        
+        <!-- Place your kit's code here -->
+        <script data-search-pseudo-elements defer src="https://kit.fontawesome.com/61d3312dd9.js" crossorigin="anonymous"></script>
+        
+        
+<script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-168549883-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" media="print" onload="this.media='all'" />
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        </noscript>
+
+
+    </head>
+    <body class="line-numbers bg-gray-50">
+        <div class="flex flex-col h-screen">
+            <header class="bg-gray-900">
+    <nav class="flex flex-wrap items-center justify-between py-4 px-4">
+        <div>
+            <a href="/" rel="author">
+                <!-- <img class="block md:hidden h-12 w-auto" src="/assets/logo_small.svg" alt="Kaylumah" /> -->
+                <img class="h-12 w-auto" src="/assets/logo.svg" alt="Kaylumah" />
+            </a>
+        </div>
+        <div class="flex md:hidden">
+            <button id="hamburger" class="inline-flex items-center justify-center p-2 rounded-md text-gray-100 hover:text-gray-400 hover:bg-gray-500">
+                <span class="sr-only">Open main menu</span>
+                <svg class="toggle block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="toggle hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="toggle hidden md:flex w-full md:w-auto text-right text-bold mt-5 md:mt-0 border-t-2 border-gray-600 md:border-none"><a href="/about.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                About
+            </a><a href="/blog.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                Blog
+            </a></div>
+    </nav>
+     <script>
+        document.getElementById('hamburger').onclick = function toggleMenu() {
+        const navToggle = document.getElementsByClassName('toggle');
+            for (let i = 0; i < navToggle.length; i++) {
+                navToggle.item(i).classList.toggle('hidden');
+            }
+        };
+    </script>
+</header>
+
+            <main class="flex-1 py-4 text-gray-900">
+                <article class="py-16 px-6 sm:px-8">
+    <header>
+        <h1 class="flex flex-col items-center mx-auto">
+            <span class="text-gray-900 font-semibold tracking-wide uppercase">Article</span>
+            <span class="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Generate C# client for OpenAPI</span>
+        </h1>
+        <img alt="post cover-image" class="mx-auto mt-1" src="/assets/images/posts/20210523/generate-csharp-client-for-openapi/cover_image.png" />
+        <div class="mx-auto mt-1">
+            <dl class="rounded-lg sm:grid sm:grid-cols-4">
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Authored by
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        Max Hamulyák
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Posted on
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        <time datetime="2021-05-23">2021/05/23</time>
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Reading time
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        8 minute
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Published in
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                    
+                    <a href="/tags.html#CSharp" class="text-gray-500">
+                        <span class="text-gray-600">#</span>CSharp
+                    </a>
+                    
+                    <a href="/tags.html#OpenAPI" class="text-gray-500">
+                        <span class="text-gray-600">#</span>OpenAPI
+                    </a>
+                    
+                    <a href="/tags.html#NSwag" class="text-gray-500">
+                        <span class="text-gray-600">#</span>NSwag
+                    </a>
+                    
+                    <a href="/tags.html#Swashbuckle" class="text-gray-500">
+                        <span class="text-gray-600">#</span>Swashbuckle
+                    </a>
+                    
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        
+        <hr class="mt-8 border-t-2 w-20 mx-auto" />
+    </header>
+    <div class="mt-8 mx-auto max-w-prose md:max-w-full prose md:prose-lg lg:prose-xl">
+
+
+
+        
+        <p>I've recently worked on a project where I was the consumer of a third party API. Luckily for me, we decided on an Open API specification which made integrating services a breeze. If you have been following my content, you know I often use C# in my projects. So I needed a type-safe client for use in my C# code base.</p>
+<p>To accomplish my goals, I used the <a href="https://github.com/RicoSuter/NSwag/wiki/NSwag.MSBuild" class="external">NSwag library</a> created by Rico Suter. This project provides me with an MSBuild task for generating clients. In my case, I used a JSON file version to generate my client. NSwag is not limited to just one way of working.</p>
+<h2 id="what-is-openapi"><a href="#what-is-openapi">What is OpenAPI</a></h2>
+<p>First, a quick recap of what is an OpenAPI. According to the <a href="https://swagger.io/specification/" class="external">official definition</a>:</p>
+<blockquote>
+<p>The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.</p>
+<p>An OpenAPI definition can then be used by documentation generation tools to display the API, code generation tools to generate servers and clients in various programming languages, testing tools, and many other use cases.</p>
+</blockquote>
+<p>That's pretty cool. Also, if you are wondering about the difference between OpenAPI / Swagger, Swagger is part of the OpenAPI initiative since 2015. But in short OpenAPI = specification, Swagger = Tooling. In this article, I am not going into much detail in setting up your API, but Microsoft <a href="https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-5.0#openapi-vs-swagger" class="external">described</a> three versions on how to combine it with .NET Core.</p>
+<h2 id="generate-client-from-file"><a href="#generate-client-from-file">Generate client from file</a></h2>
+<p>The first version uses a file to generate our code. In our case, we will use a <a href="https://petstore.swagger.io/v2/swagger.json" class="external">JSON file</a> from the <a href="https://petstore.swagger.io/" class="external">PetStore</a> example project as provided by the swagger team.</p>
+<pre><code class="language-shell">dotnet new classlib --framework netstandard2.0 --output src/Sdks/PetStore --name Kaylumah.GenerateCSharpClientForOpenAPI.Sdks.PetStore
+dotnet add package NSwag.MSBuild
+dotnet add package System.ComponentModel.Annotations
+dotnet add package Newtonsoft.Json
+</code></pre>
+<p>Safe the pet store OpenAPI JSON in the project we just created under the name <code>swagger.json</code>. We also need a <code>nswag.json</code> file with the following contents:</p>
+<pre><code class="language-json">{
+    &quot;runtime&quot;: &quot;NetCore31&quot;,
+    &quot;documentGenerator&quot;: {
+        &quot;fromDocument&quot;: {
+            &quot;json&quot;: &quot;swagger.json&quot;
+        }
+    },
+    &quot;codeGenerators&quot;: {
+        &quot;openApiToCSharpClient&quot;: {
+            &quot;output&quot;: &quot;Client.g.cs&quot;
+        }
+    }
+}
+</code></pre>
+<p>We use an MSBuild task that calls NSwag. Update <code>Kaylumah.GenerateCSharpClientForOpenAPI.Sdks.PetStore.csproj</code> to look like this.</p>
+<pre><code class="language-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include=&quot;Newtonsoft.Json&quot; Version=&quot;13.0.1&quot; /&gt;
+    &lt;PackageReference Include=&quot;NSwag.MSBuild&quot; Version=&quot;13.11.1&quot;&gt;
+      &lt;IncludeAssets&gt;runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets&gt;
+      &lt;PrivateAssets&gt;all&lt;/PrivateAssets&gt;
+    &lt;/PackageReference&gt;
+    &lt;PackageReference Include=&quot;System.ComponentModel.Annotations&quot; Version=&quot;5.0.0&quot; /&gt;
+  &lt;/ItemGroup&gt;
+
+  &lt;Target Name=&quot;GenerateSdk&quot; BeforeTargets=&quot;Build&quot;&gt;
+    &lt;Exec Command=&quot;$(NSwagExe_Core31) run nswag.json &quot; /&gt;
+  &lt;/Target&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<p>After building the project, we have a file named <code>Client.g.cs</code> containing everything we need to consume the PetStore API. We can use a console application to verify that we can make API calls.</p>
+<pre><code class="language-shell">dotnet new console --framework netcoreapp3.1 --output src/Client/ApiClient --name Kaylumah.GenerateCSharpClientForOpenAPI.Client.ApiClient
+</code></pre>
+<p>An example call we can make with our API looks like this:</p>
+<pre><code class="language-cs">using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace Kaylumah.GenerateCSharpClientForOpenAPI.Client.ApiClient
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            var httpClient = new HttpClient();
+            var apiClient = new MyNamespace.Client(httpClient);
+            var result = await apiClient.GetInventoryAsync();
+            Console.WriteLine(string.Join(&quot;|&quot;, result.Keys));
+        }
+    }
+}
+
+</code></pre>
+<h2 id="influence-created-output"><a href="#influence-created-output">Influence created output</a></h2>
+<p>We have established that we have a working C# client for the PetStore API. Let us look at the generated result. We got DTO's for every definition in the definitions part of the specification. We also got a class named <code>Client</code> with methods as <code>GetInventoryAsync</code>. All the generated code in <code>Client.g.cs</code> is part of the namespace <code>MyNamespace</code>; this is not helpful if I wanted to create a project with many API clients.</p>
+<p>Two things influence the generated code. First, how you specify your fields has the most influence. For example, are your fields required, are they nullable and which kind of values are allowed. You cannot always influence this as sometimes you consume an external API; such is the case with our PetStore implementation. Luckily we can control the output by tuning values in our NSwag configuration. An eagle-eyed reader will have noticed that we are already doing this. Our nswag.json is responsible for the result. In this case, we are using the <code>output</code> variable to control the generated file's name.</p>
+<p>We control the output by using an NSwag configuration document usually called <code>*.nswag</code> or <code>nswag.json</code>. It can be generated via NSwagStudio or manually. Over at the <a href="https://github.com/RicoSuter/NSwag/wiki/NSwag-Configuration-Document" class="external">NSwag Wiki</a> you can read all about it. It's outside of the scope of this article to go into all options, so I will demonstrate a couple of changes I like to make in my projects.</p>
+<blockquote>
+<p><strong>Note</strong>: You can generate a nswag configuration file by running <code>&lt;Exec Command=&quot;$(NSwagExe_Core31) new&quot; /&gt;</code>.</p>
+</blockquote>
+<p>I encourage you to take a look at the documentation to see all configuration options. Some options apply to every generator, and some only to C# clients. See the table below for links to every section. Every section describes the options and default values if applicable.</p>
+<table>
+<thead>
+<tr>
+<th>Settings</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/RicoSuter/NSwag/wiki/ClientGeneratorBaseSettings" class="external">ClientGeneratorBaseSettings</a></td>
+<td>Common settings for all client code generators.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RicoSuter/NSwag/wiki/CSharpGeneratorBaseSettings" class="external">CSharpGeneratorBaseSettings</a></td>
+<td>Base settings for all C# code generators.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/RicoSuter/NSwag/wiki/CSharpClientGeneratorSettings" class="external">CSharpClientGeneratorSettings</a></td>
+<td>Settings for C# clients.</td>
+</tr>
+</tbody>
+</table>
+<p>If you look closely at your build log, you see the following line <code>Executing file 'nswag.json' with variables ''...</code>. So how do we pass variables to NSwag? Update the statement to <code>$(NSwagExe_Core31) run nswag.json /variables:Configuration=$(Configuration)</code> . Here we define a variable named Configuration and assign it the MSBuild value for $(Configuration). If we build our project, the logline reads <code>Executing file 'nswag.json' with variables 'Configuration=Debug'...</code>. You also have the option to supply default values in your NSwag configuration. This way, you don't see it as part of your build log, but it helps omit parts from the command.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>namespace</code> and <code>contractsNamespace</code></td>
+<td>Control the namespace of the generated code</td>
+</tr>
+<tr>
+<td><code>generateContractsOutput</code> and <code>contractsOutputFilePath</code></td>
+<td>Control seperation of contract and implementation</td>
+</tr>
+<tr>
+<td><code>generateClientInterfaces</code></td>
+<td>create an interface</td>
+</tr>
+<tr>
+<td><code>exceptionClass</code> and <code>className</code></td>
+<td>control classnames</td>
+</tr>
+<tr>
+<td><code>operationGenerationMode</code></td>
+<td>how to create client for multiple endpoints</td>
+</tr>
+</tbody>
+</table>
+<p>After our modifications, our NSwag file looks like this.</p>
+<pre><code class="language-json">{
+    &quot;runtime&quot;: &quot;NetCore31&quot;,
+    &quot;defaultVariables&quot;: &quot;Configuration=Debug&quot;,
+    &quot;documentGenerator&quot;: {
+        &quot;fromDocument&quot;: {
+            &quot;json&quot;: &quot;$(InputDocument)&quot;
+        }
+    },
+    &quot;codeGenerators&quot;: {
+        &quot;openApiToCSharpClient&quot;: {
+            &quot;generateClientInterfaces&quot;: true,
+            &quot;exceptionClass&quot;: &quot;$(SdkName)ApiException&quot;,
+            &quot;useBaseUrl&quot;: true,
+            &quot;generateBaseUrlProperty&quot;: true,
+            &quot;generateContractsOutput&quot;: true,
+            &quot;contractsNamespace&quot;: &quot;$(SdkNamespace).Interface&quot;,
+            &quot;contractsOutputFilePath&quot;: &quot;$(GeneratedContractFile)&quot;,
+            &quot;className&quot;: &quot;$(SdkName)Client&quot;,
+            &quot;operationGenerationMode&quot;: &quot;SingleClientFromOperationId&quot;,
+            &quot;namespace&quot;: &quot;$(SdkNamespace).Service&quot;,
+            &quot;output&quot;: &quot;$(GeneratedClientFile)&quot;
+        }
+    }
+}
+</code></pre>
+<p>To pass all the values to NSwag, we update our csproj file to look like this. For demonstration purposes, I show that the name of the MSBuild variable does not need to match the NSwag variable. Do take care that the variable names passed to NSwag need to match the name in nswag.json</p>
+<pre><code class="language-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;netstandard2.0&lt;/TargetFramework&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include=&quot;Newtonsoft.Json&quot; Version=&quot;13.0.1&quot; /&gt;
+    &lt;PackageReference Include=&quot;NSwag.MSBuild&quot; Version=&quot;13.11.1&quot;&gt;
+      &lt;IncludeAssets&gt;runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets&gt;
+      &lt;PrivateAssets&gt;all&lt;/PrivateAssets&gt;
+    &lt;/PackageReference&gt;
+    &lt;PackageReference Include=&quot;System.ComponentModel.Annotations&quot; Version=&quot;5.0.0&quot; /&gt;
+  &lt;/ItemGroup&gt;
+
+  &lt;Target Name=&quot;GenerateSdk&quot; BeforeTargets=&quot;Build&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;OpenAPIDocument&gt;swagger.json&lt;/OpenAPIDocument&gt;
+        &lt;NSwagConfiguration&gt;nswag.json&lt;/NSwagConfiguration&gt;
+
+        &lt;SdkNamespace&gt;$(RootNamespace)&lt;/SdkNamespace&gt;
+        &lt;SdkName&gt;PetStore&lt;/SdkName&gt;
+        &lt;GeneratedInterfaceFile&gt;$(SdkName).Interface.g.cs&lt;/GeneratedInterfaceFile&gt;
+        &lt;GeneratedServiceFile&gt;$(SdkName).Service.g.cs&lt;/GeneratedServiceFile&gt;
+
+    &lt;/PropertyGroup&gt;
+    &lt;Error Text=&quot;The OpenAPI document '$(OpenAPIDocument)' does not exists!&quot; Condition=&quot;!Exists('$(OpenAPIDocument)')&quot; /&gt;
+    &lt;Error Text=&quot;The NSwag configuration '$(NSwagConfiguration)' does not exists!&quot; Condition=&quot;!Exists('$(NSwagConfiguration)')&quot; /&gt;
+    &lt;Exec Command=&quot;$(NSwagExe_Core31) run $(NSwagConfiguration) /variables:Configuration=$(Configuration),InputDocument=$(OpenAPIDocument),SdkName=$(SdkName),SdkNamespace=$(SdkNamespace),GeneratedClientFile=$(GeneratedServiceFile),GeneratedContractFile=$(GeneratedInterfaceFile)&quot; /&gt;
+  &lt;/Target&gt;
+
+&lt;/Project&gt;
+</code></pre>
+<h2 id="generate-client-from-api-in-your-project"><a href="#generate-client-from-api-in-your-project">Generate client from API in your project</a></h2>
+<p>Our second version generates the SDK based on a .NET Core API project in our solution, which can be very useful if you want to provide the client in a NuGet package to other projects/teams in your organization. The project setup will be almost identical to our file-based setup.</p>
+<pre><code class="language-shell">dotnet new classlib --framework netstandard2.0 --output src/Sdks/FromNswagApi --name Kaylumah.GenerateCSharpClientForOpenAPI.Sdks.FromNswagApi
+dotnet add package NSwag.MSBuild
+dotnet add package System.ComponentModel.Annotations
+dotnet add package Newtonsoft.Json
+</code></pre>
+<p>If we are going to create an SDK we first need to generate our API project. We generate a webapi with the following command:</p>
+<pre><code class="language-sh">dotnet new webapi --framework netcoreapp3.1 --output src/Apis/Nswag/WeatherForecastApi --name Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Nswag.WeatherForecastApi
+</code></pre>
+<p>Note that I am specifying the optional --framework option for creating the projects; this has two reasons. First, I prefer to use LTS versions of the Microsoft SDK and secondly, Microsoft made <a href="https://docs.microsoft.com/en-us/aspnet/core/release-notes/aspnetcore-5.0?view=aspnetcore-5.0#openapi-specification-on-by-default" class="external">changes</a> to the webapi template in the NET5 SDK that makes it opt-out to use OpenAPI and defaults to Swashbuckle, which I don't want in this case.</p>
+<pre><code class="language-json">{
+    &quot;runtime&quot;: &quot;NetCore31&quot;,
+    &quot;documentGenerator&quot;: {
+        &quot;aspNetCoreToOpenApi&quot;: {
+            &quot;project&quot;: &quot;../../Apis/Nswag/WeatherForecastApi/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Nswag.WeatherForecastApi.csproj&quot;
+        }
+    },
+    &quot;codeGenerators&quot;: {
+        &quot;openApiToCSharpClient&quot;: {
+            &quot;generateClientInterfaces&quot;: true,
+            &quot;exceptionClass&quot;: &quot;$(SdkName)ApiException&quot;,
+            &quot;useBaseUrl&quot;: true,
+            &quot;generateBaseUrlProperty&quot;: true,
+            &quot;generateContractsOutput&quot;: true,
+            &quot;contractsNamespace&quot;: &quot;$(SdkNamespace).Interface&quot;,
+            &quot;contractsOutputFilePath&quot;: &quot;$(GeneratedContractFile)&quot;,
+            &quot;className&quot;: &quot;$(SdkName)Client&quot;,
+            &quot;operationGenerationMode&quot;: &quot;SingleClientFromOperationId&quot;,
+            &quot;namespace&quot;: &quot;$(SdkNamespace).Service&quot;,
+            &quot;output&quot;: &quot;$(GeneratedClientFile)&quot;
+        }
+    }
+}
+</code></pre>
+<p>Like before, we need a <code>GenerateSdk</code> target; the difference is that we don't have a <code>swagger.json</code>.</p>
+<pre><code class="language-xml">&lt;Target Name=&quot;GenerateSdk&quot; BeforeTargets=&quot;Build&quot;&gt;
+&lt;PropertyGroup&gt;
+    &lt;NSwagConfiguration&gt;nswag.json&lt;/NSwagConfiguration&gt;
+
+    &lt;SdkNamespace&gt;$(RootNamespace)&lt;/SdkNamespace&gt;
+    &lt;SdkName&gt;Weather&lt;/SdkName&gt;
+    &lt;GeneratedInterfaceFile&gt;$(SdkName).Interface.g.cs&lt;/GeneratedInterfaceFile&gt;
+    &lt;GeneratedServiceFile&gt;$(SdkName).Service.g.cs&lt;/GeneratedServiceFile&gt;
+
+&lt;/PropertyGroup&gt;
+&lt;Error Text=&quot;The NSwag configuration '$(NSwagConfiguration)' does not exists!&quot; Condition=&quot;!Exists('$(NSwagConfiguration)')&quot; /&gt;
+&lt;Exec Command=&quot;$(NSwagExe_Core31) run $(NSwagConfiguration) /variables:Configuration=$(Configuration),SdkName=$(SdkName),SdkNamespace=$(SdkNamespace),GeneratedClientFile=$(GeneratedServiceFile),GeneratedContractFile=$(GeneratedInterfaceFile)&quot; /&gt;
+&lt;/Target&gt;
+</code></pre>
+<p>If we try to build our project now, we get an error.</p>
+<pre><code class="language-output">Microsoft (R) Build Engine version 16.9.0+57a23d249 for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  NSwag command line tool for .NET Core NetCore31, toolchain v13.11.1.0 (NJsonSchema v10.4.3.0 (Newtonsoft.Json v12.0.0.0))
+  Visit http://NSwag.org for more information.
+  NSwag bin directory: /Users/maxhamulyak/.nuget/packages/nswag.msbuild/13.11.1/tools/NetCore31
+  
+  Executing file 'nswag.json' with variables 'Configuration=Debug'...
+  Launcher directory: /Users/maxhamulyak/.nuget/packages/nswag.msbuild/13.11.1/tools/NetCore31
+  System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
+   ---&gt; System.InvalidOperationException: No service for type 'NSwag.Generation.IOpenApiDocumentGenerator' has been registered.
+</code></pre>
+<p>The reason behind this error is that the tool requires NSwag in the API project. To do this, we need to install the NSwag.AspNetCore package with <code>dotnet add package NSwag.AspNetCore</code>.  The scope of this tutorial is not how to set up an API project with NSwag luckily, the <a href="https://github.com/RicoSuter/NSwag#usage-in-c" class="external">guide</a> is straightforward. We modify the <code>ConfigureServices</code> method in Startup.cs with <code>services.AddOpenApiDocument();</code> and we add <code>app.UseOpenApi();</code> and <code>app.UseSwaggerUi3();</code> to the <code>Configure</code> method. We have an Open API specification for our WeatherForecast controller with these changes and can easily view and test it with Swagger UI.</p>
+<p>Now we can successfully generate a client for the WeatherForecastAPI!</p>
+<h2 id="generate-client-from-swashbuckle-project"><a href="#generate-client-from-swashbuckle-project">Generate client from Swashbuckle project</a></h2>
+<p>The third and final version I will look at is a combination of both previous versions. I already hinted at it in the last section, but Microsoft made some <a href="https://docs.microsoft.com/en-us/aspnet/core/release-notes/aspnetcore-5.0?view=aspnetcore-5.0#openapi-specification-on-by-default" class="external">changes</a> to the template to generate them by default using Swashbuckle.</p>
+<pre><code class="language-shell">dotnet new classlib --framework netstandard2.0 --output src/Sdks/FromSwashbuckleApi --name Kaylumah.GenerateCSharpClientForOpenAPI.Sdks.FromSwashbuckleApi
+dotnet add package NSwag.MSBuild
+dotnet add package System.ComponentModel.Annotations
+dotnet add package Newtonsoft.Json
+</code></pre>
+<p>Like before, we also need a webapi project.</p>
+<pre><code class="language-sh">dotnet new webapi --framework netcoreapp3.1 --output src/Apis/Swashbuckle/WeatherForecastApi --name Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi
+</code></pre>
+<p>Of course, we could launch the API project and browse to <code>https://localhost:5001/swagger/index.html</code> and download the specification from there. But I will opt for automating the process with a <a href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore#swashbuckleaspnetcorecli" class="external">CLI</a> provided as a dotnet tool by Swashbuckle.</p>
+<p>Since we are using netcoreapp3.1 we can make use of a local tool manifest.</p>
+<pre><code class="language-sh">dotnet new tool-manifest
+dotnet tool install --version 6.1.4 Swashbuckle.AspNetCore.Cli
+</code></pre>
+<p>This allows us to run <code>swagger tofile --output [output] [startupassembly] [swaggerdoc]</code>. For example, in the FromSwashbuckleApi folder we would run <code>dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1</code>.</p>
+<p>At the moment, this returns an error if you target a netcoreapp3.1 project when using a net5 SDK. This <a href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/2006" class="external">issue</a> describes a change in 6.x of the tool. A workaround for this is using a global.json file.</p>
+<pre><code class="language-json">{
+    &quot;sdk&quot;: {
+        &quot;version&quot;: &quot;3.1.406&quot;,
+        &quot;rollForward&quot;: &quot;latestPatch&quot;
+    }
+}
+</code></pre>
+<p>Similar to the NSwag version, we still need to add Swashbuckle to the webapi. Luckily just as with NSwag the <a href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore#getting-started" class="external">guide</a> is straightforward.</p>
+<pre><code class="language-xml">&lt;Target Name=&quot;GenerateOpenAPI&quot; BeforeTargets=&quot;GenerateSdk&quot;&gt;
+  &lt;Exec Command=&quot;dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1&quot; /&gt;
+&lt;/Target&gt;
+
+&lt;Target Name=&quot;GenerateSdk&quot; BeforeTargets=&quot;Build&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OpenAPIDocument&gt;swagger.json&lt;/OpenAPIDocument&gt;
+    &lt;NSwagConfiguration&gt;nswag.json&lt;/NSwagConfiguration&gt;
+
+    &lt;SdkNamespace&gt;$(RootNamespace)&lt;/SdkNamespace&gt;
+    &lt;SdkName&gt;Weather&lt;/SdkName&gt;
+    &lt;GeneratedInterfaceFile&gt;$(SdkName).Interface.g.cs&lt;/GeneratedInterfaceFile&gt;
+    &lt;GeneratedServiceFile&gt;$(SdkName).Service.g.cs&lt;/GeneratedServiceFile&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;Error Text=&quot;The OpenAPI document '$(OpenAPIDocument)' does not exists!&quot; Condition=&quot;!Exists('$(OpenAPIDocument)')&quot; /&gt;
+  &lt;Error Text=&quot;The NSwag configuration '$(NSwagConfiguration)' does not exists!&quot; Condition=&quot;!Exists('$(NSwagConfiguration)')&quot; /&gt;
+  &lt;Exec Command=&quot;$(NSwagExe_Core31) run $(NSwagConfiguration) /variables:Configuration=$(Configuration),InputDocument=$(OpenAPIDocument),SdkName=$(SdkName),SdkNamespace=$(SdkNamespace),GeneratedClientFile=$(GeneratedServiceFile),GeneratedContractFile=$(GeneratedInterfaceFile)&quot; /&gt;
+&lt;/Target&gt;
+</code></pre>
+<p>Now that we generated a second version of our Weather API, let's quickly compare the two.</p>
+<pre><code class="language-cs">// Swashbuckle
+[System.CodeDom.Compiler.GeneratedCode(&quot;NSwag&quot;, &quot;13.11.1.0 (NJsonSchema v10.4.3.0 (Newtonsoft.Json v12.0.0.0))&quot;)]
+public partial interface IWeatherClient
+{
+    /// &lt;returns&gt;Success&lt;/returns&gt;
+    /// &lt;exception cref=&quot;WeatherApiException&quot;&gt;A server side error occurred.&lt;/exception&gt;
+    System.Threading.Tasks.Task&lt;System.Collections.Generic.ICollection&lt;WeatherForecast&gt;&gt; WeatherForecastAsync();
+
+    /// &lt;param name=&quot;cancellationToken&quot;&gt;A cancellation token that can be used by other objects or threads to receive notice of cancellation.&lt;/param&gt;
+    /// &lt;returns&gt;Success&lt;/returns&gt;
+    /// &lt;exception cref=&quot;WeatherApiException&quot;&gt;A server side error occurred.&lt;/exception&gt;
+    System.Threading.Tasks.Task&lt;System.Collections.Generic.ICollection&lt;WeatherForecast&gt;&gt; WeatherForecastAsync(System.Threading.CancellationToken cancellationToken);
+
+}
+
+// NSwag
+[System.CodeDom.Compiler.GeneratedCode(&quot;NSwag&quot;, &quot;13.11.1.0 (NJsonSchema v10.4.3.0 (Newtonsoft.Json v12.0.0.0))&quot;)]
+public partial interface IWeatherClient
+{
+    /// &lt;exception cref=&quot;WeatherApiException&quot;&gt;A server side error occurred.&lt;/exception&gt;
+    System.Threading.Tasks.Task&lt;System.Collections.Generic.ICollection&lt;WeatherForecast&gt;&gt; WeatherForecast_GetAsync();
+
+    /// &lt;param name=&quot;cancellationToken&quot;&gt;A cancellation token that can be used by other objects or threads to receive notice of cancellation.&lt;/param&gt;
+    /// &lt;exception cref=&quot;WeatherApiException&quot;&gt;A server side error occurred.&lt;/exception&gt;
+    System.Threading.Tasks.Task&lt;System.Collections.Generic.ICollection&lt;WeatherForecast&gt;&gt; WeatherForecast_GetAsync(System.Threading.CancellationToken cancellationToken);
+
+}
+</code></pre>
+<p>Funnily enough, even in a specification as small as these, there can already be differences!</p>
+<h2 id="closing-thoughts"><a href="#closing-thoughts">Closing Thoughts</a></h2>
+<p>As we have seen, there are multiple ways to generate a client by using <code>NSwag.MSBuild</code>.
+If I am writing an OpenAPI specification, I prefer the syntax of Swashbuckle for several things like API versioning. That, of course, is a personal preference, but since Microsoft now also offers Swashbuckle as a default, it is nice to know we can make Swashbuckle and NSwag play nice together. How I configure my API with OpenAPI, API Versioning, ProblemDetails will be part of a future blog post.</p>
+<p>So, where do we go from here? I did not mention it in the article, but in every generated client, we need to inject <code>System.Net.HttpClient</code>, which means we can combine it with <a href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests" class="external">HttpClientFactory</a> and all the options it provides. Alas, that is also a topic for another day.</p>
+<p>As always, if you have any questions, feel free to reach out. Do you have suggestions or alternatives? I would love to hear about them.</p>
+<p>The corresponding source code for this article is on <a href="https://github.com/kaylumah/GenerateCSharpClientForOpenAPI" class="external">GitHub</a>.</p>
+<p>See you next time, stay healthy and happy coding to all 🧸!</p>
+<h2 id="sources"><a href="#sources">Sources</a></h2>
+<ul>
+<li><a href="https://github.com/RicoSuter/NSwag/wiki/" class="external">NSwag GitHub</a></li>
+<li><a href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore" class="external">Swashbuckle GitHub</a></li>
+</ul>
+    </div>
+    
+    <footer class="flex flex-col mt-8">
+        <span class="mx-auto">Enjoying my content? Consider sharing and help me grow my audience :)</span>
+        <div class="flex justify-center space-x-6">
+            <a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html" onclick="window.open(this.href, 'width=550,height=435');return false;">
+                <em class="fab fa-linkedin"></em>
+            </a>
+            <a target="_blank" href="https://twitter.com/intent/tweet?text=Generate C# client for OpenAPI&url=https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <em class="fab fa-twitter"></em>
+            </a>
+            <a target="_blank" href="https://facebook.com/sharer.php?u=https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+                <em class="fab fa-facebook"></em>
+            </a>
+        </div>
+    </footer>
+    
+</article>
+            </main>
+            <footer class="bg-gray-900">
+    <div class="py-4 px-4">
+        <div class="flex justify-center space-x-6">
+            
+            <a target="_blank" rel=”noopener” href="https://www.linkedin.com/in/maxhamulyak" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">LinkedIn</span>
+                <em class="fab fa-linkedin fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://github.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">GitHub</span>
+                <em class="fab fa-github-square fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://twitter.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Twitter</span>
+                <em class="fab fa-twitter-square fa-lg"></em>
+            </a>
+        </div>
+        <div class="pt-2 flex flex-col text-center text-gray-100">
+            <span>© Kaylumah. All rights reserved.</span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/84241ac86909d2e80ac7b3f91c860aa8edd1e631">84241ac</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/869475770">155</a></span>
+        </div>
+        <div class="pt-2 flex justify-center space-x-6">
+            <a href="/" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Kaylumah</span>
+                <em class="fak fa-logo-kaylumah fa-lg"></em>
+            </a>
+        </div>
+    </div>
+</footer>
+        </div>
+        <script src="/assets/prism.js?v=84241ac"></script>
+    </body>
+</html>
