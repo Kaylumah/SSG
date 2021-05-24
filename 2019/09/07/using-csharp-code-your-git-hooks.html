@@ -11,14 +11,14 @@
         <link rel="manifest" href="/assets/images/site.webmanifest" />
         <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
         
-        <link href="/compiled.css?v=8a2b46b" rel="stylesheet" />
-        <link href="/assets/prism.css?v=8a2b46b" rel="stylesheet" />
+        <link href="/compiled.css?v=8f0c817" rel="stylesheet" />
+        <link href="/assets/prism.css?v=8f0c817" rel="stylesheet" />
         
-        <!-- Begin Kaylumah SEO tag v8a2b46b -->
+        <!-- Begin Kaylumah SEO tag v8f0c817 -->
 
     <title>Using C# code in your git hooks</title>
 
-    <meta name="generator" content="Kaylumah v8a2b46b" />
+    <meta name="generator" content="Kaylumah v8f0c817" />
 
     <meta property="og:title" content="Using C# code in your git hooks" />
 
@@ -114,9 +114,9 @@
             |___/                                  
                                                    
  © Kaylumah. All rights reserved.                             
- 8a2b46b4097316909ebf1624d35f6ab87eb9b4ad                              
+ 8f0c81739c0bd02f27c5e055f42f8a4cd69ae31e                              
  2.1.3                               
- 05/23/2021 22:08:29 +00:00
+ 05/24/2021 11:52:20 +00:00
  site: 5779c7fd-cd79-5890-b41c-18d7868b3777
  page: e8e6ac98-c1e2-5969-a24d-3bbf4d12baea                                  
                                                    
@@ -268,10 +268,6 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
         <hr class="mt-8 border-t-2 w-20 mx-auto" />
     </header>
     <div class="mt-8 mx-auto max-w-prose md:max-w-full prose md:prose-lg lg:prose-xl">
-
-
-
-        
         <h2 id="why-use-hooks"><a href="#why-use-hooks">Why use hooks?</a></h2>
 <p>We, as developers, love platforms like GitHub, GitLab, Atlassian, Azure DevOps etc., as our managed git system and collaboration platform. We also love clean code and keep inventing new linters and rules to enforce it. In my opinion, every commit should allow the codebase to deploy to production. There is nothing worse than commits like “fixed style errors” or “fixed build”. These are often small mistakes you want to know as early as possible in your development cycle. You don’t want to break the build for the next developer because he pulled your ‘mistake’ or waste precious build minutes of your CI server. Say you have asked your teammate to review your code; in the meantime, the build server rejects your code. That means you have to go back and fix this, and your teammate has to come back and possibly review again after the changes (i.e., approvals reset on new commit). Doing so would waste a lot of time and effort.</p>
 <blockquote>
@@ -563,22 +559,102 @@ public static Config GetConfig()
 <p><a href="https://github.com/maxhamulyak/git-hooks-example" class="external">maxhamulyak/git-hooks-example</a></p>
 <p>Happy Coding 🍻</p>
     </div>
-    
+
     <footer class="flex flex-col mt-8">
-        <span class="mx-auto">Enjoying my content? Consider sharing and help me grow my audience :)</span>
-        <div class="flex justify-center space-x-6">
-            <a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'width=550,height=435');return false;">
-                <em class="fab fa-linkedin"></em>
-            </a>
-            <a target="_blank" href="https://twitter.com/intent/tweet?text=Using%20C%23%20code%20in%20your%20git%20hooks&url=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
-                <em class="fab fa-twitter"></em>
-            </a>
-            <a target="_blank" href="https://facebook.com/sharer.php?u=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
-                <em class="fab fa-facebook"></em>
-            </a>
-        </div>
+        
+        <div class="social-share">
+    <span class="mx-auto">Enjoying my content? Consider sharing and help me grow my audience :)</span>
+    <div class="flex justify-center space-x-6">
+        <a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'width=550,height=435');return false;">
+            <em class="fab fa-linkedin"></em>
+        </a>
+        <a target="_blank" href="https://twitter.com/intent/tweet?text=Using%20C%23%20code%20in%20your%20git%20hooks&url=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+            <em class="fab fa-twitter"></em>
+        </a>
+        <a target="_blank" href="https://facebook.com/sharer.php?u=https://kaylumah.nl/2019/09/07/using-csharp-code-your-git-hooks.html" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+            <em class="fab fa-facebook"></em>
+        </a>
+    </div> 
+</div>
+        
+        
+        <script>
+const GH_ISSUE_API = 'https://api.github.com/repos/kaylumah/kaylumah.github.io/issues/12/comments?per_page=100';
+let request = new XMLHttpRequest();
+request.open( 'GET', GH_ISSUE_API, true );
+
+request.onload = function() {
+    if ( this.status >= 200 && this.status < 400 ) { 
+        let response = JSON.parse( this.response );
+
+        for ( var i = 0; i < response.length; i++ ) {
+			document.getElementById( 'gh-comments-list' ).appendChild( createCommentEl( response[ i ] ) );
+		}
+        document.getElementById( 'no-comments-found' ).style.display = 0 === response.length  ? 'block' : 'none';
+    }
+    else {
+        console.error( this );
+    }
+};
+
+function createCommentEl( response ) {
+    let userName = document.createElement('h3');
+    userName.classList.add('text-sm', 'font-medium');
+    userName.innerHTML = `@${response.user.login}`;
+
+    let commentTime = document.createElement('p');
+    commentTime.classList.add('text-sm', 'text-gray-500');
+    commentTime.textContent = response.created_at;
+
+    let commentMetadata = document.createElement('div');
+    commentMetadata.classList.add('flex', 'items-center', 'justify-between');
+    commentMetadata.appendChild(userName);
+    commentMetadata.appendChild(commentTime);
+
+    let commentContents = document.createElement('p');
+    commentContents.classList.add('text-sm', 'text-gray-500');
+    commentContents.innerHTML = response.body;
+
+    let commentWrapper = document.createElement('div');
+    commentWrapper.classList.add('flex-1', 'space-y-1');
+    commentWrapper.appendChild(commentMetadata);
+    commentWrapper.appendChild(commentContents);
+
+    let userAvatar = document.createElement( 'img' );
+    userAvatar.classList.add('h-6', 'w-6', 'rounded-full');
+	userAvatar.setAttribute( 'src', response.user.avatar_url );
+
+    let commentLink = document.createElement('a');
+    commentLink.classList.add('flex', 'space-x-3');
+    commentLink.appendChild(userAvatar);
+    commentLink.appendChild(commentWrapper);
+    commentLink.setAttribute( 'href', response.html_url );
+
+    let comment = document.createElement('li');
+    comment.classList.add('py-4');
+    comment.setAttribute( 'data-created', response.created_at );
+	comment.setAttribute( 'data-author-avatar', response.user.avatar_url );
+	comment.setAttribute( 'data-user-url', response.user.url );
+    comment.appendChild(commentLink);
+
+    return comment;
+}
+
+request.send();
+</script>
+
+<div class="github-comments" class="mt-2">
+	<h2>Comments</h2>
+	<ul class="divide-y divide-gray-200" id="gh-comments-list">
+        <li id="no-comments-found" class="py-4">
+            <span class="text-sm font-semibold">No comments found for this article.</span>
+        </li>
+    </ul>
+	<p id="leave-a-comment">Join the discussion for this article on <a class="font-semibold external" href="https://github.com/kaylumah/kaylumah.github.io/issues/12">this ticket</a>.</p>
+</div>
+        
     </footer>
-    
+   
 </article>
             </main>
             <footer class="bg-gray-900">
@@ -600,7 +676,7 @@ public static Config GetConfig()
         </div>
         <div class="pt-2 flex flex-col text-center text-gray-100">
             <span>© Kaylumah. All rights reserved.</span>
-            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/8a2b46b4097316909ebf1624d35f6ab87eb9b4ad">8a2b46b</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/869539511">156</a></span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/8f0c81739c0bd02f27c5e055f42f8a4cd69ae31e">8f0c817</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/871269998">158</a></span>
         </div>
         <div class="pt-2 flex justify-center space-x-6">
             <a href="/" class="text-gray-100 hover:text-gray-400">
@@ -611,6 +687,6 @@ public static Config GetConfig()
     </div>
 </footer>
         </div>
-        <script src="/assets/prism.js?v=8a2b46b"></script>
+        <script src="/assets/prism.js?v=8f0c817"></script>
     </body>
 </html>
