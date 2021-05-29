@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <id>https://kaylumah.nl/feed.xml</id>
-    <updated>2021-05-27T19:44:10.2305152+00:00</updated>
+    <updated>2021-05-29T09:47:43.5545981+00:00</updated>
     <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
     <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
@@ -9,7 +9,7 @@
     <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
     <logo>https://kaylumah.nl/assets/logo.svg</logo>
     <rights>© Kaylumah. All rights reserved.</rights>
-    <generator uri="/feed.xml" version="bf3bcd8">Kaylumah Site Generator</generator>
+    <generator uri="/feed.xml" version="b94c2f0">Kaylumah Site Generator</generator>
     <entry>
         <id>https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html</id>
         <title>Generate C# client for OpenAPI</title>
@@ -301,7 +301,9 @@ dotnet add package Newtonsoft.Json
 &lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;dotnet new tool-manifest
 dotnet tool install --version 6.1.4 Swashbuckle.AspNetCore.Cli
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This allows us to run &lt;code&gt;swagger tofile --output [output] [startupassembly] [swaggerdoc]&lt;/code&gt;. For example, in the FromSwashbuckleApi folder we would run &lt;code&gt;dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This allows us to run&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;swagger tofile --output [output] [startupassembly] [swaggerdoc]`. For example, in the FromSwashbuckleApi folder we would run `dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1
+&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;At the moment, this returns an error if you target a netcoreapp3.1 project when using a net5 SDK. This &lt;a href=&quot;https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/2006&quot; class=&quot;external&quot;&gt;issue&lt;/a&gt; describes a change in 6.x of the tool. A workaround for this is using a global.json file.&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
     &amp;quot;sdk&amp;quot;: {

@@ -11,14 +11,14 @@
         <link rel="manifest" href="/assets/images/site.webmanifest" />
         <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
         
-        <link href="/compiled.css?v=bf3bcd8" rel="stylesheet" />
-        <link href="/assets/prism.css?v=bf3bcd8" rel="stylesheet" />
+        <link href="/compiled.css?v=b94c2f0" rel="stylesheet" />
+        <link href="/assets/prism.css?v=b94c2f0" rel="stylesheet" />
         
-        <!-- Begin Kaylumah SEO tag vbf3bcd8 -->
+        <!-- Begin Kaylumah SEO tag vb94c2f0 -->
 
     <title>Generate C# client for OpenAPI</title>
 
-    <meta name="generator" content="Kaylumah vbf3bcd8" />
+    <meta name="generator" content="Kaylumah vb94c2f0" />
 
     <meta property="og:title" content="Generate C# client for OpenAPI" />
 
@@ -114,9 +114,9 @@
             |___/                                  
                                                    
  © Kaylumah. All rights reserved.                             
- bf3bcd87bad7b2b6e933c25d3a8a32ec36c22a81                              
+ b94c2f06652fe14ccd3a068fa2a0a9a7a554dba3                              
  2.1.3                               
- 05/27/2021 19:44:10 +00:00
+ 05/29/2021 09:47:43 +00:00
  site: 5779c7fd-cd79-5890-b41c-18d7868b3777
  page: f917bef9-d62d-55cd-85a5-c5318338e46c                                  
                                                    
@@ -547,7 +547,9 @@ dotnet add package Newtonsoft.Json
 <pre><code class="language-sh">dotnet new tool-manifest
 dotnet tool install --version 6.1.4 Swashbuckle.AspNetCore.Cli
 </code></pre>
-<p>This allows us to run <code>swagger tofile --output [output] [startupassembly] [swaggerdoc]</code>. For example, in the FromSwashbuckleApi folder we would run <code>dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1</code>.</p>
+<p>This allows us to run</p>
+<pre><code class="language-sh">swagger tofile --output [output] [startupassembly] [swaggerdoc]`. For example, in the FromSwashbuckleApi folder we would run `dotnet swagger tofile --output swagger.json ../../Apis/Swashbuckle/WeatherForecastApi/bin/Debug/netcoreapp3.1/Kaylumah.GenerateCSharpClientForOpenAPI.Apis.Swashbuckle.WeatherForecastApi.dll v1
+</code></pre>
 <p>At the moment, this returns an error if you target a netcoreapp3.1 project when using a net5 SDK. This <a href="https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/2006" class="external">issue</a> describes a change in 6.x of the tool. A workaround for this is using a global.json file.</p>
 <pre><code class="language-json">{
     &quot;sdk&quot;: {
@@ -736,7 +738,7 @@ request.send();
         </div>
         <div class="pt-2 flex flex-col text-center text-gray-100">
             <span>© Kaylumah. All rights reserved.</span>
-            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/bf3bcd87bad7b2b6e933c25d3a8a32ec36c22a81">bf3bcd8</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/883360703">159</a></span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/b94c2f06652fe14ccd3a068fa2a0a9a7a554dba3">b94c2f0</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/887958275">163</a></span>
         </div>
         <div class="pt-2 flex justify-center space-x-6">
             <a href="/" class="text-gray-100 hover:text-gray-400">
@@ -747,6 +749,6 @@ request.send();
     </div>
 </footer>
         </div>
-        <script src="/assets/prism.js?v=bf3bcd8"></script>
+        <script src="/assets/prism.js?v=b94c2f0"></script>
     </body>
 </html>
