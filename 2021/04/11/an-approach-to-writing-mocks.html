@@ -11,14 +11,14 @@
         <link rel="manifest" href="/assets/images/site.webmanifest" />
         <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
         
-        <link href="/compiled.css?v=c06e97b" rel="stylesheet" />
-        <link href="/assets/prism.css?v=c06e97b" rel="stylesheet" />
+        <link href="/compiled.css?v=907cb39" rel="stylesheet" />
+        <link href="/assets/prism.css?v=907cb39" rel="stylesheet" />
         
-        <!-- Begin Kaylumah SEO tag vc06e97b -->
+        <!-- Begin Kaylumah SEO tag v907cb39 -->
 
     <title>Experiment with Moq, an approach to writing mocks</title>
 
-    <meta name="generator" content="Kaylumah vc06e97b" />
+    <meta name="generator" content="Kaylumah v907cb39" />
 
     <meta property="og:title" content="Experiment with Moq, an approach to writing mocks" />
 
@@ -114,9 +114,9 @@
             |___/                                  
                                                    
  © Kaylumah. All rights reserved.                             
- c06e97b783c1a8558b99889ad2838dc2eb6b1cab                              
+ 907cb39418427d27693a4fd9c42ba6ef1d4dbf10                              
  2.1.3                               
- 06/05/2021 13:19:40 +00:00
+ 06/05/2021 13:33:31 +00:00
  site: 5779c7fd-cd79-5890-b41c-18d7868b3777
  page: 598867bd-aad1-56d9-b250-218549c61e8f                                  
                                                    
@@ -1080,7 +1080,8 @@ public async Task Test_ArticleAccess_Returns200OK()
 </div>
         
         
-        <script>
+        <script src="  https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
 const GH_ISSUE_API = 'https://api.github.com/repos/kaylumah/kaylumah.github.io/issues/14/comments?per_page=100';
 let request = new XMLHttpRequest();
 request.open( 'GET', GH_ISSUE_API, true );
@@ -1116,6 +1117,11 @@ function createCommentEl( response ) {
     let commentContents = document.createElement('p');
     commentContents.classList.add('text-sm', 'text-gray-500');
     commentContents.innerHTML = response.body;
+    // Progressive enhancement.
+	if ( window.showdown ) {
+		let converter = new showdown.Converter();
+		commentContents.innerHTML = converter.makeHtml( response.body );
+	}
 
     let commentWrapper = document.createElement('div');
     commentWrapper.classList.add('flex-1', 'space-y-1');
@@ -1148,6 +1154,7 @@ request.send();
 <div class="github-comments" class="mt-2">
 	<h2>Comments</h2>
 	<ul class="divide-y divide-gray-200" id="gh-comments-list">
+        <noscript>Please enable JavaScript to load the comments.</noscript>
         <li id="no-comments-found" class="py-4">
             <span class="text-sm font-semibold">No comments found for this article.</span>
         </li>
@@ -1178,7 +1185,7 @@ request.send();
         </div>
         <div class="pt-2 flex flex-col text-center text-gray-100">
             <span>© Kaylumah. All rights reserved.</span>
-            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/c06e97b783c1a8558b99889ad2838dc2eb6b1cab">c06e97b</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/909331570">173</a></span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/907cb39418427d27693a4fd9c42ba6ef1d4dbf10">907cb39</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/909356087">175</a></span>
         </div>
         <div class="pt-2 flex justify-center space-x-6">
             <a href="/" class="text-gray-100 hover:text-gray-400">
@@ -1189,6 +1196,6 @@ request.send();
     </div>
 </footer>
         </div>
-        <script src="/assets/prism.js?v=c06e97b"></script>
+        <script src="/assets/prism.js?v=907cb39"></script>
     </body>
 </html>
