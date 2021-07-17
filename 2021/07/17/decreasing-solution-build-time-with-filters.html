@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" href="/assets/images/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/site.webmanifest" />
+        <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
+        
+        <link href="/compiled.css?v=5fe560e" rel="stylesheet" />
+        <link href="/assets/prism.css?v=5fe560e" rel="stylesheet" />
+        
+        <!-- Begin Kaylumah SEO tag v5fe560e -->
+
+    <title>Decreasing Solution Build time with Filters</title>
+
+    <meta name="generator" content="Kaylumah v5fe560e" />
+
+    <meta property="og:title" content="Decreasing Solution Build time with Filters" />
+
+
+    <meta name="author" content="max" />
+
+    <meta property="og:locale" content="en" />
+
+    <meta name="description" content="How to use solution filters to increase focus and decrease build time" />
+    <meta property="og:description" content="How to use solution filters to increase focus and decrease build time" />
+
+
+
+    
+    <link rel="canonical" href="https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" />
+    <meta property="og:url" content="https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" />
+
+
+
+
+    <meta property="og:site_name" content="Kaylumah, Max Hamulyák | Portfolio & Blog" />
+
+
+
+    <meta property="og:image" content="https://kaylumah.nl/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/cover_image.png" />
+
+
+
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-07-17T00:00:00.0000000+00:00" />
+
+
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:image" content="https://kaylumah.nl/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/cover_image.png" />
+
+
+    <meta property="twitter:title" content="Decreasing Solution Build time with Filters" />
+
+
+
+  
+    <meta name="twitter:site" content="@kaylumah" />
+  
+    <meta name="twitter:creator" content="@kaylumah" />
+  
+
+
+<script type="application/ld+json">
+{
+  "description": "How to use solution filters to increase focus and decrease build time",
+  "@type": "WebSite",
+  "publisher": {
+    "@type": "Organization",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaylumah.nl/assets/logo.svg"
+    }
+  },
+  "headline": "",
+  "sameAs": [],
+  "url": "https://kaylumah.nl",
+  "name": "Max Hamulyák",
+  "image": "https://kaylumah.nl/assets/images/social_preview.png",
+  "@context": "https://schema.org"
+}
+</script>
+
+
+
+
+
+<meta name="keywords" content="Visual Studio 2019,MSBuild">
+
+<!-- End Kaylumah SEO tag -->
+        <!-- BEGIN Feed MetaData-->
+<link
+  type="application/atom+xml"
+  rel="alternate"
+  href="https://kaylumah.nl/feed.xml"
+  title="Kaylumah, Max Hamulyák | Portfolio & Blog RSS Feed"
+/>
+<!-- END Feed MetaData -->
+
+
+        <!--
+                                                   
+  _  __           _                       _        
+ | |/ /__ _ _   _| |_   _ _ __ ___   __ _| |__     
+ | ' // _` | | | | | | | | '_ ` _ \ / _` | '_ \    
+ | . \ (_| | |_| | | |_| | | | | | | (_| | | | |   
+ |_|\_\__,_|\__, |_|\__,_|_| |_| |_|\__,_|_| |_|   
+            |___/                                  
+                                                   
+ © Kaylumah. All rights reserved.                             
+ 5fe560e82a3b586b738e48c5e91805b39cebe1e8                              
+ 2.1.3                               
+ 07/17/2021 21:37:04 +00:00
+ site: 5779c7fd-cd79-5890-b41c-18d7868b3777
+ page: b58168ff-7468-5908-bb72-114ec3073f3e                                  
+                                                   
+ You found 🧸                                      
+                                                   
+                                                   
+-->
+
+<script>
+
+  const consoleSignatureText = '%c👨‍💻 Thank you for your visit to my little spot on the internet, be welcome! 🧸';
+  const consoleSignatureStyle = `
+  font-size: 16px;
+  background: #4cae50;
+  color: white;
+  text-align: center;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 20px;
+`;
+  console.log(consoleSignatureText, consoleSignatureStyle);
+</script>
+        
+        <!-- Place your kit's code here -->
+        <script data-search-pseudo-elements defer src="https://kit.fontawesome.com/61d3312dd9.js" crossorigin="anonymous"></script>
+        
+        
+<script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-168549883-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" media="print" onload="this.media='all'" />
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto&display=swap" />
+        </noscript>
+
+
+    </head>
+    <body class="line-numbers bg-gray-100 fa-colors">
+        <div class="flex flex-col h-screen">
+            <header class="bg-gray-900">
+    <nav class="flex flex-wrap items-center justify-between py-4 px-4">
+        <div>
+            <a href="/" rel="author">
+                <!-- <img class="block md:hidden h-12 w-auto" src="/assets/logo_small.svg" alt="Kaylumah" /> -->
+                <img class="h-12 w-auto" src="/assets/logo.svg" alt="Kaylumah" />
+            </a>
+        </div>
+        <div class="flex md:hidden">
+            <button id="hamburger" class="inline-flex items-center justify-center p-2 rounded-md text-gray-100 hover:text-gray-400 hover:bg-gray-500">
+                <span class="sr-only">Open main menu</span>
+                <svg class="toggle block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="toggle hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="toggle hidden md:flex w-full md:w-auto text-right text-bold mt-5 md:mt-0 border-t-2 border-gray-600 md:border-none"><a href="/about.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                About
+            </a><a href="/blog.html" class="block md:inline-block text-gray-100 hover:text-gray-400 px-3 py-3 border-b-2 border-gray-600 md:border-none">
+                Blog
+            </a></div>
+    </nav>
+     <script>
+        document.getElementById('hamburger').onclick = function toggleMenu() {
+        const navToggle = document.getElementsByClassName('toggle');
+            for (let i = 0; i < navToggle.length; i++) {
+                navToggle.item(i).classList.toggle('hidden');
+            }
+        };
+    </script>
+</header>
+
+            <main class="flex-1 py-4 text-gray-900">
+                <article class="py-16 px-6 sm:px-8">
+    <header>
+        <h1 class="flex flex-col items-center mx-auto">
+            <span class="text-gray-900 font-semibold tracking-wide uppercase">Article</span>
+            <span class="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Decreasing Solution Build time with Filters</span>
+        </h1>
+        <img alt="post cover-image" class="mx-auto mt-1" src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/cover_image.png" />
+        <div class="mx-auto mt-1">
+            <dl class="rounded-lg sm:grid sm:grid-cols-4">
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Authored by
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        Max Hamulyák
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Posted on
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        <time datetime="2021-07-17">2021/07/17</time>
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Reading time
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                        4 minute
+                    </dd>
+                </div>
+                <div class="flex flex-col p-6 text-center">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                        Published in
+                    </dt>
+                    <dd class="order-1 text-xl font-extrabold">
+                    
+                    <a href="/tags.html#Visual%20Studio%202019" class="text-gray-500">
+                        <span class="text-gray-600">#</span>Visual Studio 2019
+                    </a>
+                    
+                    <a href="/tags.html#MSBuild" class="text-gray-500">
+                        <span class="text-gray-600">#</span>MSBuild
+                    </a>
+                    
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        
+        <hr class="mt-8 border-t-2 w-20 mx-auto" />
+    </header>
+    <div class="mt-8 mx-auto max-w-prose md:max-w-full prose md:prose-lg lg:prose-xl">
+        <p>There are many ways to structure your projects source code. My preference is a style called single-solution-model. Amongst other things, I like that it provides a single entry point to my project. If, however, your project grows, it can become slow to build it. I am sure some of you will be familiar with the following <a href="https://imgs.xkcd.com/comics/compiling.png" class="external">xkcd joke</a> or some variant of it:</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/xkcd_joke_compiling.png" alt="xkcd_joke" /></p>
+<p>The <a href="https://devblogs.microsoft.com/visualstudio/visual-studio-2022-preview-1-now-available" class="external">next version</a> of Visual Studio will come with a lot of promised performance improvements. VisualStudio 2022 is the first version that takes advantage of the 64-bit processor architecture. I have not yet tested it, but I am hopeful for a more performant experience developing when it ships.</p>
+<blockquote>
+<p>While I think the 1600+ projects in a solution demo are cool, I would not see myself using the single solution model at that scale.</p>
+</blockquote>
+<p>That brings me to the topic of today's post. I recently discovered a VS2019 feature I did not know that can bring some improvement to my experience. VS2019 introduced a new feature called <a href="https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions?view=vs-2019" class="external">solution filters</a>. I googled a bit against it and did not find a lot about it, except for the Microsoft Docs itself. So I wrote this post to help raise awareness for something I found very useful.</p>
+<h2 id="project-setup"><a href="#project-setup">Project Setup</a></h2>
+<p>I think over my past couple of posts, it's become clear that I am a fan of the <code>Microsoft.Extensions</code> repository. While Microsoft uses multiple solution files throughout the repository, I would opt for the single solution model.</p>
+<p>Many of the projects in the repo follow this pattern:</p>
+<ul>
+<li><code>Concept.Abstractions</code> provides interfaces</li>
+<li><code>.Concept</code> provides default implementation for <code>Concept.Abstractions</code></li>
+<li><code>Concept.Concrete</code> technology specific implementation for <code>Concept.Abstractions</code></li>
+</ul>
+<pre><code class="language-shell">dotnet new sln --name &quot;SlnFilter&quot;
+
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.Abstractions --output src/Kaylumah.SlnFilter.Extensions.Concept.Abstractions
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept --output src/Kaylumah.SlnFilter.Extensions.Concept
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha --output src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo --output src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo
+
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.Tests
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests
+
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.Abstractions/Kaylumah.SlnFilter.Extensions.Concept.Abstractions.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept/Kaylumah.SlnFilter.Extensions.Concept.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.Tests/Kaylumah.SlnFilter.Extensions.Concept.Tests.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests.csproj
+
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Test.Utilities --output test/Kaylumah.SlnFilter.Test.Utilities
+</code></pre>
+<blockquote>
+<p>Note <code>Kaylumah.SlnFilter.Test.Utilities</code> should not yet be added to the solution.</p>
+</blockquote>
+<h2 id="setting-up-our-filters"><a href="#setting-up-our-filters">Setting up our filters</a></h2>
+<p>After following these steps, our project should look like the picture below in Visual Studio.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/001_vs2019_sln_all_projects.png" alt="sln-all-projects" /></p>
+<p>We can select one or more projects at a time and unload them from the solution.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/002_vs2019_sln_unload_projects.png" alt="sln_unload_projects" /></p>
+<p>Up until now, this is how I would have done things. Just unload projects I won't need and don't worry about them anymore. What I did not know is that we save the current state of the solution.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/003_vs2019_sln_save_filter_001.png" alt="sln_save_filter_001" /></p>
+<p>Unloading projects manually to create filters can be error-prone. Since a solution filter only builds the projects selected by the filter missing a project causes the build to fail.</p>
+<p>An alternative can be to unload all projects, select the project you want, and use the &quot;reload with dependencies&quot; option.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/004_vs2019_sln_reload_project_dependencies.png" alt="sln_reload_project_dependencies" /></p>
+<p>Like before, we can save the solution filter with the <code>Save As Solution Filter</code> option. The only difference is that we now get 4/7 projects as opposed to 5/7 projects. That's because we loaded the <code>ConcreteBravo.Tests</code> projects and it's dependencies. Even though that loads <code>Extensions.Concept</code> it does not load <code>Extensions.Concept.Tests</code> since it is not a dependency of <code>ConcreteBravo.Tests</code>.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/005_vs2019_sln_save_filter_002.png" alt="sln_save_filter_002" /></p>
+<p>While researching something unrelated to this post, I noticed that the <a href="https://github.com/dotnet/efcore" class="external">EF Core team</a> used this feature I did not know existed. The cool thing was that they also had a filter for all projects. So I had to try that out, and as it turns out, you can create a filter without unloading projects.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/006_vs2019_sln_save_filter_003.png" alt="sln_save_filter_003" /></p>
+<p>The image below shows the difference between the three filters we created. It looks exactly like a traditional Solution Explorer with the addition that the name of the filter applied is displayed.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/007_vs2019_slnf_project_overview.png" alt="slnf_project_overview" /></p>
+<h2 id="manage-solution-changes"><a href="#manage-solution-changes">Manage solution changes</a></h2>
+<p>You might be wondering what happens when I need to add new projects to my solution?</p>
+<p>To demonstrate, let us assume our test projects have a shared helper project. At this time, I want to update our &quot;Concept.Bravo&quot; solution filter. This time I don't want to use dotnet CLI but use <code>Add existing project</code>.</p>
+<blockquote>
+<p>You cannot use <code>dotnet sln add</code> on slnf files, but you can use them with <code>dotnet build</code></p>
+</blockquote>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/008_vs2019_slnf_add_existing_project.png" alt="slnf_add_existing_project" /></p>
+<p>As soon as you did this, you get this pop-up stating a mismatch between the loaded projects and the project specified in the filter.</p>
+<p>If you followed the steps in a GIT environment, you would see that even before pressing <code>Update Solution Filter</code> the underlying solution is already updated.</p>
+<p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/009_vs2019_slnf_update_solution_filter.png" alt="slnf_update_solution_filter" /></p>
+<h2 id="the-missing-bit"><a href="#the-missing-bit">The missing bit</a></h2>
+<p>I discussed this feature at work as a potential workaround for an issue we had in structuring our projects. One of my colleagues remembered looking at it about a year ago and finding it lacking. A few minutes later, he found a <a href="https://developercommunity.visualstudio.com/t/Solution-Filter-should-allow-for-Include/1090914?space=8&amp;q=solution+filter" class="external">post</a> on the developer community for Visual Studio. Funnily enough, it's a small world; the user-post links to a GitHub issue he created in this matter.</p>
+<p>The problem is the management of multiple solutions filters because the filters are inclusive with relative paths following the sln-filter location. A proposed improvement would be to use glob patterns to include/exclude projects. That would make it easier when following naming conventions to have always up-to-date filters.</p>
+<p>At a customer I work for, they use PowerShell as their script platform of choice, so I needed a deeper understanding of PowerShell. With PowerShell, it's reasonably easy to work with the file system and convert from and to JSON. So I thought, how hard can it be to script this.</p>
+<p>The following script loads the paths of all *.csproj present in the solution directory and filters them out by RegEx. It then writes it to disk in the .slnf-format.</p>
+<pre><code class="language-ps">$inputSln = &quot;SlnFilter.sln&quot;
+$outputSlnFilter = &quot;SlnFilter.Generated.slnf&quot;
+
+$projectFiles = Get-ChildItem -Recurse -Filter &quot;*.csproj&quot; -Name
+# $excludeFilters = @()
+$excludeFilters = @('.ConcreteBravo')
+
+
+$targetProjects = New-Object Collections.Generic.List[String]
+
+foreach ($project in $projectFiles)
+{
+    $shouldInclude = $true
+
+    foreach ($filter in $excludeFilters)
+    {
+        $shouldInclude = $project -notmatch $filter
+        if (!$shouldInclude)
+        {
+            break
+        }
+    }
+
+    if ($shouldInclude)
+    {
+        $targetProjects.Add($project)
+    }
+}
+
+$sln = New-Object -TypeName psobject
+$sln | Add-Member -MemberType NoteProperty -Name &quot;path&quot; -Value $inputSln
+$sln | Add-Member -MemberType NoteProperty -Name &quot;projects&quot; -value $targetProjects
+
+$root = New-Object -TypeName psobject
+$root | Add-Member -MemberType NoteProperty -Name &quot;solution&quot; -value $sln
+
+$root | ConvertTo-Json | Out-File $outputSlnFilter
+</code></pre>
+<h2 id="closing-thoughts"><a href="#closing-thoughts">Closing Thoughts</a></h2>
+<p>I like this new feature as a way to manage my larger solutions. Of course, it's not practical to maintain my (very basic) script for this. It will be a huge help if you think this is a valuable feature to upvote the Visual Studio Community forum issue.</p>
+<p>As always, if you have any questions, feel free to reach out. Do you have suggestions or alternatives? I would love to hear about them.</p>
+<p>The corresponding source code for this article is on <a href="https://github.com/kaylumah/SolutionFilter" class="external">GitHub</a>.</p>
+<p>See you next time, stay healthy and happy coding to all 🧸!</p>
+<h2 id="sources"><a href="#sources">Sources</a></h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions?view=vs-2019" class="external">slnf in VisualStudio</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/solution-filters?view=vs-2019" class="external">slnf in MSBuild</a></li>
+</ul>
+    </div>
+
+    <footer class="flex flex-col mt-8">
+        
+        <div class="social-share">
+    <span class="mx-auto">Enjoying my content? Consider sharing and help me grow my audience :)</span>
+    <div class="flex justify-center space-x-6">
+            <a target="_blank" rel=”noopener” href="https://www.linkedin.com/shareArticle?mini=true&url=https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" onclick="window.open(this.href, 'width=550,height=435');return false;">
+                <span class="sr-only">LinkedIn Share</span>
+                <em class="fab fa-linkedin fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://twitter.com/intent/tweet?text=Decreasing%20Solution%20Build%20time%20with%20Filters&url=https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <span class="sr-only">Twitter Share</span>
+                <em class="fab fa-twitter-square fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://facebook.com/sharer.php?u=https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+                <span class="sr-only">Twitter Share</span>
+                <em class="fab fa-facebook fa-lg"></em>
+            </a>
+    </div>
+</div>
+        
+        
+        <script src="  https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script>
+const GH_ISSUE_API = 'https://api.github.com/repos/kaylumah/kaylumah.github.io/issues/33/comments?per_page=100';
+let request = new XMLHttpRequest();
+request.open( 'GET', GH_ISSUE_API, true );
+
+request.onload = function() {
+    if ( this.status >= 200 && this.status < 400 ) { 
+        let response = JSON.parse( this.response );
+
+        for ( var i = 0; i < response.length; i++ ) {
+			document.getElementById( 'gh-comments-list' ).appendChild( createCommentEl( response[ i ] ) );
+		}
+        document.getElementById( 'no-comments-found' ).style.display = 0 === response.length  ? 'block' : 'none';
+    }
+    else {
+        console.error( this );
+    }
+};
+
+function createCommentEl( response ) {
+    let userName = document.createElement('h3');
+    userName.classList.add('text-sm', 'font-medium');
+    userName.innerHTML = `@${response.user.login}`;
+
+    let commentTime = document.createElement('p');
+    commentTime.classList.add('text-sm', 'text-gray-500');
+    commentTime.textContent = response.created_at;
+
+    let commentMetadata = document.createElement('div');
+    commentMetadata.classList.add('flex', 'items-center', 'justify-between');
+    commentMetadata.appendChild(userName);
+    commentMetadata.appendChild(commentTime);
+
+    let commentContents = document.createElement('p');
+    commentContents.classList.add('text-sm', 'text-gray-500');
+    commentContents.innerHTML = response.body;
+    // Progressive enhancement.
+	if ( window.showdown ) {
+		let converter = new showdown.Converter();
+		commentContents.innerHTML = converter.makeHtml( response.body );
+	}
+
+    let commentWrapper = document.createElement('div');
+    commentWrapper.classList.add('flex-1', 'space-y-1');
+    commentWrapper.appendChild(commentMetadata);
+    commentWrapper.appendChild(commentContents);
+
+    let userAvatar = document.createElement( 'img' );
+    userAvatar.classList.add('h-6', 'w-6', 'rounded-full');
+	userAvatar.setAttribute( 'src', response.user.avatar_url );
+
+    let commentLink = document.createElement('a');
+    commentLink.classList.add('flex', 'space-x-3');
+    commentLink.appendChild(userAvatar);
+    commentLink.appendChild(commentWrapper);
+    commentLink.setAttribute( 'href', response.html_url );
+
+    let comment = document.createElement('li');
+    comment.classList.add('py-4');
+    comment.setAttribute( 'data-created', response.created_at );
+	comment.setAttribute( 'data-author-avatar', response.user.avatar_url );
+	comment.setAttribute( 'data-user-url', response.user.url );
+    comment.appendChild(commentLink);
+
+    return comment;
+}
+
+request.send();
+</script>
+
+<div class="github-comments" class="mt-2">
+	<h2>Comments</h2>
+	<ul class="divide-y divide-gray-200" id="gh-comments-list">
+        <noscript>Please enable JavaScript to load the comments.</noscript>
+        <li id="no-comments-found" class="py-4">
+            <span class="text-sm font-semibold">No comments found for this article.</span>
+        </li>
+    </ul>
+	<p id="leave-a-comment">Join the discussion for this article on <a class="font-semibold external" href="https://github.com/kaylumah/kaylumah.github.io/issues/33">this ticket</a>.</p>
+</div>
+        
+    </footer>
+   
+</article>
+            </main>
+            <footer class="bg-gray-900">
+    <div class="py-4 px-4">
+        <div class="flex justify-center space-x-6">
+            
+            <a target="_blank" rel=”noopener” href="https://www.linkedin.com/in/maxhamulyak" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">LinkedIn</span>
+                <em class="fab fa-linkedin fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://github.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">GitHub</span>
+                <em class="fab fa-github-square fa-lg"></em>
+            </a>
+            <a target="_blank" rel=”noopener” href="https://twitter.com/kaylumah" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Twitter</span>
+                <em class="fab fa-twitter-square fa-lg"></em>
+            </a>
+        </div>
+        <div class="pt-2 flex flex-col text-center text-gray-100">
+            <span>© Kaylumah. All rights reserved.</span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/5fe560e82a3b586b738e48c5e91805b39cebe1e8">5fe560e</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/1041104109">189</a></span>
+        </div>
+        <div class="pt-2 flex justify-center space-x-6">
+            <a href="/" class="text-gray-100 hover:text-gray-400">
+                <span class="sr-only">Kaylumah</span>
+                <em class="fak fa-logo-kaylumah fa-lg"></em>
+            </a>
+        </div>
+    </div>
+</footer>
+        </div>
+        <script src="/assets/prism.js?v=5fe560e"></script>
+    </body>
+</html>

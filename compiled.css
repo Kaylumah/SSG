@@ -1507,6 +1507,10 @@ a.external svg {
 	box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+	filter: var(--tw-filter);
+}
+
 .line-clamp-2 {
 	overflow: hidden;
 	display: -webkit-box;

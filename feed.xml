@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <id>https://kaylumah.nl/feed.xml</id>
-    <updated>2021-07-17T14:17:03.2372622+00:00</updated>
+    <updated>2021-07-17T21:37:04.4053576+00:00</updated>
     <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
     <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
@@ -9,7 +9,158 @@
     <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
     <logo>https://kaylumah.nl/assets/logo.svg</logo>
     <rights>© Kaylumah. All rights reserved.</rights>
-    <generator uri="/feed.xml" version="c5ace34">Kaylumah Site Generator</generator>
+    <generator uri="/feed.xml" version="5fe560e">Kaylumah Site Generator</generator>
+    <entry>
+        <id>https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html</id>
+        <title>Decreasing Solution Build time with Filters</title>
+        <author>
+            <name>Max Hamulyák</name>
+            <email>max@kaylumah.nl</email>
+            <uri>https:/kaylumah.nl</uri>
+        </author>
+        <published>2021-07-17T00:00:00.0000000+00:00</published>
+        <updated>2021-07-17T00:00:00.0000000+00:00</updated>
+        <link href="https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html" />
+        <content type="html">
+            &lt;p&gt;There are many ways to structure your projects source code. My preference is a style called single-solution-model. Amongst other things, I like that it provides a single entry point to my project. If, however, your project grows, it can become slow to build it. I am sure some of you will be familiar with the following &lt;a href=&quot;https://imgs.xkcd.com/comics/compiling.png&quot; class=&quot;external&quot;&gt;xkcd joke&lt;/a&gt; or some variant of it:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/xkcd_joke_compiling.png&quot; alt=&quot;xkcd_joke&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&quot;https://devblogs.microsoft.com/visualstudio/visual-studio-2022-preview-1-now-available&quot; class=&quot;external&quot;&gt;next version&lt;/a&gt; of Visual Studio will come with a lot of promised performance improvements. VisualStudio 2022 is the first version that takes advantage of the 64-bit processor architecture. I have not yet tested it, but I am hopeful for a more performant experience developing when it ships.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;While I think the 1600+ projects in a solution demo are cool, I would not see myself using the single solution model at that scale.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;That brings me to the topic of today&#39;s post. I recently discovered a VS2019 feature I did not know that can bring some improvement to my experience. VS2019 introduced a new feature called &lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions?view=vs-2019&quot; class=&quot;external&quot;&gt;solution filters&lt;/a&gt;. I googled a bit against it and did not find a lot about it, except for the Microsoft Docs itself. So I wrote this post to help raise awareness for something I found very useful.&lt;/p&gt;
+&lt;h2 id=&quot;project-setup&quot;&gt;&lt;a href=&quot;#project-setup&quot;&gt;Project Setup&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I think over my past couple of posts, it&#39;s become clear that I am a fan of the &lt;code&gt;Microsoft.Extensions&lt;/code&gt; repository. While Microsoft uses multiple solution files throughout the repository, I would opt for the single solution model.&lt;/p&gt;
+&lt;p&gt;Many of the projects in the repo follow this pattern:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Concept.Abstractions&lt;/code&gt; provides interfaces&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.Concept&lt;/code&gt; provides default implementation for &lt;code&gt;Concept.Abstractions&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Concept.Concrete&lt;/code&gt; technology specific implementation for &lt;code&gt;Concept.Abstractions&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;dotnet new sln --name &amp;quot;SlnFilter&amp;quot;
+
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.Abstractions --output src/Kaylumah.SlnFilter.Extensions.Concept.Abstractions
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept --output src/Kaylumah.SlnFilter.Extensions.Concept
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha --output src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo --output src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo
+
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.Tests
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests
+dotnet new xunit --framework netcoreapp3.1 --name Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests --output test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests
+
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.Abstractions/Kaylumah.SlnFilter.Extensions.Concept.Abstractions.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept/Kaylumah.SlnFilter.Extensions.Concept.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.csproj
+dotnet sln add src/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.Tests/Kaylumah.SlnFilter.Extensions.Concept.Tests.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests/Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests.csproj
+dotnet sln add test/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests/Kaylumah.SlnFilter.Extensions.Concept.ConcreteBravo.Tests.csproj
+
+dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Test.Utilities --output test/Kaylumah.SlnFilter.Test.Utilities
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note &lt;code&gt;Kaylumah.SlnFilter.Test.Utilities&lt;/code&gt; should not yet be added to the solution.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;setting-up-our-filters&quot;&gt;&lt;a href=&quot;#setting-up-our-filters&quot;&gt;Setting up our filters&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;After following these steps, our project should look like the picture below in Visual Studio.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/001_vs2019_sln_all_projects.png&quot; alt=&quot;sln-all-projects&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;We can select one or more projects at a time and unload them from the solution.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/002_vs2019_sln_unload_projects.png&quot; alt=&quot;sln_unload_projects&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Up until now, this is how I would have done things. Just unload projects I won&#39;t need and don&#39;t worry about them anymore. What I did not know is that we save the current state of the solution.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/003_vs2019_sln_save_filter_001.png&quot; alt=&quot;sln_save_filter_001&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Unloading projects manually to create filters can be error-prone. Since a solution filter only builds the projects selected by the filter missing a project causes the build to fail.&lt;/p&gt;
+&lt;p&gt;An alternative can be to unload all projects, select the project you want, and use the &amp;quot;reload with dependencies&amp;quot; option.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/004_vs2019_sln_reload_project_dependencies.png&quot; alt=&quot;sln_reload_project_dependencies&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Like before, we can save the solution filter with the &lt;code&gt;Save As Solution Filter&lt;/code&gt; option. The only difference is that we now get 4/7 projects as opposed to 5/7 projects. That&#39;s because we loaded the &lt;code&gt;ConcreteBravo.Tests&lt;/code&gt; projects and it&#39;s dependencies. Even though that loads &lt;code&gt;Extensions.Concept&lt;/code&gt; it does not load &lt;code&gt;Extensions.Concept.Tests&lt;/code&gt; since it is not a dependency of &lt;code&gt;ConcreteBravo.Tests&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/005_vs2019_sln_save_filter_002.png&quot; alt=&quot;sln_save_filter_002&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;While researching something unrelated to this post, I noticed that the &lt;a href=&quot;https://github.com/dotnet/efcore&quot; class=&quot;external&quot;&gt;EF Core team&lt;/a&gt; used this feature I did not know existed. The cool thing was that they also had a filter for all projects. So I had to try that out, and as it turns out, you can create a filter without unloading projects.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/006_vs2019_sln_save_filter_003.png&quot; alt=&quot;sln_save_filter_003&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;The image below shows the difference between the three filters we created. It looks exactly like a traditional Solution Explorer with the addition that the name of the filter applied is displayed.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/007_vs2019_slnf_project_overview.png&quot; alt=&quot;slnf_project_overview&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;manage-solution-changes&quot;&gt;&lt;a href=&quot;#manage-solution-changes&quot;&gt;Manage solution changes&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;You might be wondering what happens when I need to add new projects to my solution?&lt;/p&gt;
+&lt;p&gt;To demonstrate, let us assume our test projects have a shared helper project. At this time, I want to update our &amp;quot;Concept.Bravo&amp;quot; solution filter. This time I don&#39;t want to use dotnet CLI but use &lt;code&gt;Add existing project&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You cannot use &lt;code&gt;dotnet sln add&lt;/code&gt; on slnf files, but you can use them with &lt;code&gt;dotnet build&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/008_vs2019_slnf_add_existing_project.png&quot; alt=&quot;slnf_add_existing_project&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;As soon as you did this, you get this pop-up stating a mismatch between the loaded projects and the project specified in the filter.&lt;/p&gt;
+&lt;p&gt;If you followed the steps in a GIT environment, you would see that even before pressing &lt;code&gt;Update Solution Filter&lt;/code&gt; the underlying solution is already updated.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/009_vs2019_slnf_update_solution_filter.png&quot; alt=&quot;slnf_update_solution_filter&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;the-missing-bit&quot;&gt;&lt;a href=&quot;#the-missing-bit&quot;&gt;The missing bit&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I discussed this feature at work as a potential workaround for an issue we had in structuring our projects. One of my colleagues remembered looking at it about a year ago and finding it lacking. A few minutes later, he found a &lt;a href=&quot;https://developercommunity.visualstudio.com/t/Solution-Filter-should-allow-for-Include/1090914?space=8&amp;amp;q=solution+filter&quot; class=&quot;external&quot;&gt;post&lt;/a&gt; on the developer community for Visual Studio. Funnily enough, it&#39;s a small world; the user-post links to a GitHub issue he created in this matter.&lt;/p&gt;
+&lt;p&gt;The problem is the management of multiple solutions filters because the filters are inclusive with relative paths following the sln-filter location. A proposed improvement would be to use glob patterns to include/exclude projects. That would make it easier when following naming conventions to have always up-to-date filters.&lt;/p&gt;
+&lt;p&gt;At a customer I work for, they use PowerShell as their script platform of choice, so I needed a deeper understanding of PowerShell. With PowerShell, it&#39;s reasonably easy to work with the file system and convert from and to JSON. So I thought, how hard can it be to script this.&lt;/p&gt;
+&lt;p&gt;The following script loads the paths of all *.csproj present in the solution directory and filters them out by RegEx. It then writes it to disk in the .slnf-format.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ps&quot;&gt;$inputSln = &amp;quot;SlnFilter.sln&amp;quot;
+$outputSlnFilter = &amp;quot;SlnFilter.Generated.slnf&amp;quot;
+
+$projectFiles = Get-ChildItem -Recurse -Filter &amp;quot;*.csproj&amp;quot; -Name
+# $excludeFilters = @()
+$excludeFilters = @(&#39;.ConcreteBravo&#39;)
+
+
+$targetProjects = New-Object Collections.Generic.List[String]
+
+foreach ($project in $projectFiles)
+{
+    $shouldInclude = $true
+
+    foreach ($filter in $excludeFilters)
+    {
+        $shouldInclude = $project -notmatch $filter
+        if (!$shouldInclude)
+        {
+            break
+        }
+    }
+
+    if ($shouldInclude)
+    {
+        $targetProjects.Add($project)
+    }
+}
+
+$sln = New-Object -TypeName psobject
+$sln | Add-Member -MemberType NoteProperty -Name &amp;quot;path&amp;quot; -Value $inputSln
+$sln | Add-Member -MemberType NoteProperty -Name &amp;quot;projects&amp;quot; -value $targetProjects
+
+$root = New-Object -TypeName psobject
+$root | Add-Member -MemberType NoteProperty -Name &amp;quot;solution&amp;quot; -value $sln
+
+$root | ConvertTo-Json | Out-File $outputSlnFilter
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;closing-thoughts&quot;&gt;&lt;a href=&quot;#closing-thoughts&quot;&gt;Closing Thoughts&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I like this new feature as a way to manage my larger solutions. Of course, it&#39;s not practical to maintain my (very basic) script for this. It will be a huge help if you think this is a valuable feature to upvote the Visual Studio Community forum issue.&lt;/p&gt;
+&lt;p&gt;As always, if you have any questions, feel free to reach out. Do you have suggestions or alternatives? I would love to hear about them.&lt;/p&gt;
+&lt;p&gt;The corresponding source code for this article is on &lt;a href=&quot;https://github.com/kaylumah/SolutionFilter&quot; class=&quot;external&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;See you next time, stay healthy and happy coding to all &#129528;!&lt;/p&gt;
+&lt;h2 id=&quot;sources&quot;&gt;&lt;a href=&quot;#sources&quot;&gt;Sources&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions?view=vs-2019&quot; class=&quot;external&quot;&gt;slnf in VisualStudio&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/en-us/visualstudio/msbuild/solution-filters?view=vs-2019&quot; class=&quot;external&quot;&gt;slnf in MSBuild&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+        </content>
+        
+        <summary>How to use solution filters to increase focus and decrease build time</summary>
+        
+        
+        <category term="Visual Studio 2019" />
+        
+        <category term="MSBuild" />
+        
+        
+        
+            
+                
+            
+
+            <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://kaylumah.nl/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/cover_image.png" />
+            <media:content medium="image" url="https://kaylumah.nl/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/cover_image.png" xmlns:media="http://search.yahoo.com/mrss/" />
+
+        
+    </entry>
+    
     <entry>
         <id>https://kaylumah.nl/2021/05/23/generate-csharp-client-for-openapi.html</id>
         <title>Generate C# client for OpenAPI</title>
