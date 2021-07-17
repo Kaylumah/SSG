@@ -11,14 +11,14 @@
         <link rel="manifest" href="/assets/images/site.webmanifest" />
         <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="hotpink" />
         
-        <link href="/compiled.css?v=5fe560e" rel="stylesheet" />
-        <link href="/assets/prism.css?v=5fe560e" rel="stylesheet" />
+        <link href="/compiled.css?v=3b27a76" rel="stylesheet" />
+        <link href="/assets/prism.css?v=3b27a76" rel="stylesheet" />
         
-        <!-- Begin Kaylumah SEO tag v5fe560e -->
+        <!-- Begin Kaylumah SEO tag v3b27a76 -->
 
     <title>Decreasing Solution Build time with Filters</title>
 
-    <meta name="generator" content="Kaylumah v5fe560e" />
+    <meta name="generator" content="Kaylumah v3b27a76" />
 
     <meta property="og:title" content="Decreasing Solution Build time with Filters" />
 
@@ -114,9 +114,9 @@
             |___/                                  
                                                    
  © Kaylumah. All rights reserved.                             
- 5fe560e82a3b586b738e48c5e91805b39cebe1e8                              
+ 3b27a7681854d4da397592664684222f47b48b41                              
  2.1.3                               
- 07/17/2021 21:37:04 +00:00
+ 07/17/2021 21:59:56 +00:00
  site: 5779c7fd-cd79-5890-b41c-18d7868b3777
  page: b58168ff-7468-5908-bb72-114ec3073f3e                                  
                                                    
@@ -235,7 +235,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
                         Reading time
                     </dt>
                     <dd class="order-1 text-xl font-extrabold">
-                        4 minute
+                        5 minute
                     </dd>
                 </div>
                 <div class="flex flex-col p-6 text-center">
@@ -315,6 +315,21 @@ dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Test.Ut
 <p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/006_vs2019_sln_save_filter_003.png" alt="sln_save_filter_003" /></p>
 <p>The image below shows the difference between the three filters we created. It looks exactly like a traditional Solution Explorer with the addition that the name of the filter applied is displayed.</p>
 <p><img src="/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/007_vs2019_slnf_project_overview.png" alt="slnf_project_overview" /></p>
+<p>For example, the <code>SlnFilter.Alpha.slnf</code> I created for <code>Concept.ConcreteAlpha</code> implementation looks like this:</p>
+<pre><code class="language-json">{
+  &quot;solution&quot;: {
+    &quot;path&quot;: &quot;SlnFilter.sln&quot;,
+    &quot;projects&quot;: [
+      &quot;src\\Kaylumah.SlnFilter.Extensions.Concept.Abstractions\\Kaylumah.SlnFilter.Extensions.Concept.Abstractions.csproj&quot;,
+      &quot;src\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.csproj&quot;,
+      &quot;src\\Kaylumah.SlnFilter.Extensions.Concept\\Kaylumah.SlnFilter.Extensions.Concept.csproj&quot;,
+      &quot;test\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests.csproj&quot;,
+      &quot;test\\Kaylumah.SlnFilter.Extensions.Concept.Tests\\Kaylumah.SlnFilter.Extensions.Concept.Tests.csproj&quot;
+    ]
+  }
+}
+</code></pre>
+<p>It contains a reference to the <code>sln-file</code> and relative paths to all my <code>*.csprojs</code> I included in the <code>.slnf-file</code>.</p>
 <h2 id="manage-solution-changes"><a href="#manage-solution-changes">Manage solution changes</a></h2>
 <p>You might be wondering what happens when I need to add new projects to my solution?</p>
 <p>To demonstrate, let us assume our test projects have a shared helper project. At this time, I want to update our &quot;Concept.Bravo&quot; solution filter. This time I don't want to use dotnet CLI but use <code>Add existing project</code>.</p>
@@ -506,7 +521,7 @@ request.send();
         </div>
         <div class="pt-2 flex flex-col text-center text-gray-100">
             <span>© Kaylumah. All rights reserved.</span>
-            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/5fe560e82a3b586b738e48c5e91805b39cebe1e8">5fe560e</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/1041104109">189</a></span>
+            <span class="text-xs">Deployed from commit <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/commit/3b27a7681854d4da397592664684222f47b48b41">3b27a76</a> via build <a class="hover:text-gray-400" href="https://github.com/kaylumah/kaylumah.github.io/actions/runs/1041130852">190</a></span>
         </div>
         <div class="pt-2 flex justify-center space-x-6">
             <a href="/" class="text-gray-100 hover:text-gray-400">
@@ -517,6 +532,6 @@ request.send();
     </div>
 </footer>
         </div>
-        <script src="/assets/prism.js?v=5fe560e"></script>
+        <script src="/assets/prism.js?v=3b27a76"></script>
     </body>
 </html>

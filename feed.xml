@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <id>https://kaylumah.nl/feed.xml</id>
-    <updated>2021-07-17T21:37:04.4053576+00:00</updated>
+    <updated>2021-07-17T21:59:56.8663271+00:00</updated>
     <link href="https://kaylumah.nl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://kaylumah.nl" rel="alternate" type="text/html" />
     <title>Kaylumah, Max Hamuly&#225;k | Portfolio &amp; Blog</title>
@@ -9,7 +9,7 @@
     <icon>https://kaylumah.nl/assets/logo_small.svg</icon>
     <logo>https://kaylumah.nl/assets/logo.svg</logo>
     <rights>© Kaylumah. All rights reserved.</rights>
-    <generator uri="/feed.xml" version="5fe560e">Kaylumah Site Generator</generator>
+    <generator uri="/feed.xml" version="3b27a76">Kaylumah Site Generator</generator>
     <entry>
         <id>https://kaylumah.nl/2021/07/17/decreasing-solution-build-time-with-filters.html</id>
         <title>Decreasing Solution Build time with Filters</title>
@@ -77,6 +77,21 @@ dotnet new classlib --framework netstandard2.1 --name Kaylumah.SlnFilter.Test.Ut
 &lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/006_vs2019_sln_save_filter_003.png&quot; alt=&quot;sln_save_filter_003&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;The image below shows the difference between the three filters we created. It looks exactly like a traditional Solution Explorer with the addition that the name of the filter applied is displayed.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/images/posts/20210717/decreasing-solution-build-time-with-filters/007_vs2019_slnf_project_overview.png&quot; alt=&quot;slnf_project_overview&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;For example, the &lt;code&gt;SlnFilter.Alpha.slnf&lt;/code&gt; I created for &lt;code&gt;Concept.ConcreteAlpha&lt;/code&gt; implementation looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &amp;quot;solution&amp;quot;: {
+    &amp;quot;path&amp;quot;: &amp;quot;SlnFilter.sln&amp;quot;,
+    &amp;quot;projects&amp;quot;: [
+      &amp;quot;src\\Kaylumah.SlnFilter.Extensions.Concept.Abstractions\\Kaylumah.SlnFilter.Extensions.Concept.Abstractions.csproj&amp;quot;,
+      &amp;quot;src\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.csproj&amp;quot;,
+      &amp;quot;src\\Kaylumah.SlnFilter.Extensions.Concept\\Kaylumah.SlnFilter.Extensions.Concept.csproj&amp;quot;,
+      &amp;quot;test\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests\\Kaylumah.SlnFilter.Extensions.Concept.ConcreteAlpha.Tests.csproj&amp;quot;,
+      &amp;quot;test\\Kaylumah.SlnFilter.Extensions.Concept.Tests\\Kaylumah.SlnFilter.Extensions.Concept.Tests.csproj&amp;quot;
+    ]
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It contains a reference to the &lt;code&gt;sln-file&lt;/code&gt; and relative paths to all my &lt;code&gt;*.csprojs&lt;/code&gt; I included in the &lt;code&gt;.slnf-file&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id=&quot;manage-solution-changes&quot;&gt;&lt;a href=&quot;#manage-solution-changes&quot;&gt;Manage solution changes&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;You might be wondering what happens when I need to add new projects to my solution?&lt;/p&gt;
 &lt;p&gt;To demonstrate, let us assume our test projects have a shared helper project. At this time, I want to update our &amp;quot;Concept.Bravo&amp;quot; solution filter. This time I don&#39;t want to use dotnet CLI but use &lt;code&gt;Add existing project&lt;/code&gt;.&lt;/p&gt;
